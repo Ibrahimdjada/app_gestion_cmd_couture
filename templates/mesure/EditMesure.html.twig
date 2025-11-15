@@ -1,0 +1,189 @@
+{% extends 'layout_main.html.twig' %}
+{% block title %}Modification  mesure
+	{% endblock %}
+{% block content %}
+<section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Modification  mesure</h1>
+             {% if classe is defined %}
+			<div class="{{classe}}">{{resultat}}</div>
+		{% endif %}
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              {# <li class="breadcrumb-item"><a href="#">Accueil</a></li>
+              <li class="breadcrumb-item active">Modification  mesure</li> #}
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+	    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+     <div class="row">
+          <div class="col-12">
+
+            <div class="card">
+              <div class="card-header">
+                {# {% if action == 'create' %}
+						<h2 class="card-title">Nouvelle structure</h2>
+					{% endif %} #}
+					{# {% if action == 'edit' %}
+						<h2 class="card-title">Modifier l'mesure [{{ mesure.username }}]</h2>
+					{% endif %} #}
+              </div>
+
+
+        <h6 class="font-weight-bolder mb-0">Mesure de Mr/Mm/Mlle :{% if  mesure.user %}{{ mesure.user.firstname |capitaize_first}} {{ mesure.user.lastname |capitaize_first}}  {% else %} {% endif %}</h6>
+    </div>
+</nav>
+<div class="container form-section">
+    <div class="row">
+        <div class="col-md-8">
+            
+  <h3>Formulaire dde modification</h3>
+  <form method="post">
+    {{ form_start(form) }}
+
+    <div class="row">
+      <div class="col-md-6">
+        <h5>Modifiez les mesures du haut</h5>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              {{ form_label(form.epaule, 'Epaule (cm)') }}
+              {{ form_widget(form.epaule, {'attr': {'class': 'form-control'}}) }}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              {{ form_label(form.poitrine, 'Poitrine (cm)') }}
+              {{ form_widget(form.poitrine, {'attr': {'class': 'form-control'}}) }}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              {{ form_label(form.manche, 'Manche (cm)') }}
+              {{ form_widget(form.manche, {'attr': {'class': 'form-control'}}) }}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              {{ form_label(form.encolure, 'Encolure (cm)') }}
+              {{ form_widget(form.encolure, {'attr': {'class': 'form-control'}}) }}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+         <div class="col-md-6">
+          <div class="form-group">
+            {{ form_label(form.poignee, 'Poignée (cm)') }}
+            {{ form_widget(form.poignee, {'attr': {'class': 'form-control'}}) }}
+          </div>
+         </div>
+         <div class="col-md-6">
+          <div class="form-group">
+            {{ form_label(form.ecartDos, 'Écart Dos (cm)') }}
+            {{ form_widget(form.ecartDos, {'attr': {'class': 'form-control'}}) }}
+          </div>
+         </div>
+        </div>
+        <div class="row">
+         <div class="col-md-6">
+          <div class="form-group">
+          {{ form_label(form.tourVentrale, 'Tour ventrale (cm)') }}
+          {{ form_widget(form.tourVentrale, {'attr': {'class': 'form-control'}}) }}
+          </div>
+         </div>
+         <div class="col-md-6">
+          <div class="form-group">
+            {{ form_label(form.longueur, 'Longueur chemise (cm)') }}
+            {{ form_widget(form.longueur, {'attr': {'class': 'form-control'}}) }}
+          </div>
+         </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <h5>Modifiez les mesures du bas</h5>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              {{ form_label(form.ceinture, 'Ceinture (cm)') }}
+              {{ form_widget(form.ceinture, {'attr': {'class': 'form-control'}}) }}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              {{ form_label(form.taille, 'Taille (cm)') }}
+              {{ form_widget(form.taille, {'attr': {'class': 'form-control'}}) }}
+            </div>
+          </div>
+        </div>
+      <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              {{ form_label(form.fermeture, 'Fermeture (cm)') }}
+              {{ form_widget(form.fermeture, {'attr': {'class': 'form-control'}}) }}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+                {{ form_label(form.cuisse, 'Cuisse (cm)') }}
+                {{ form_widget(form.cuisse, {'attr': {'class': 'form-control'}}) }}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              {{ form_label(form.longueurPantalon, 'Longueur Pantalon (cm)') }}
+              {{ form_widget(form.longueurPantalon, {'attr': {'class': 'form-control'}}) }}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              {{ form_label(form.basPantalon, 'Bas Pantalon (cm)') }}
+              {{ form_widget(form.basPantalon, {'attr': {'class': 'form-control'}}) }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary" style="margin-right:15px">Enregistrer</button>
+      <i class="fa fa-ban">
+        <a href="{{ path('list_mesure') }}"><strong>Annuler</strong></a>
+      </i>
+    </div>
+
+    {{ form_end(form) }}
+  </form>
+</div>
+
+<script>
+  document.querySelector('form').addEventListener('submit', function (event) {
+    const pretFields = document.querySelectorAll('[name="champPret"]');
+    const mesureFields = document.querySelectorAll('[name="champMesure"]');
+    const regex = /^([0-9](\.\d{2})?|9\.99)$/; // Accepte de 0.01 à 9.99 avec deux décimales
+
+    let isValid = true;
+    [...pretFields, ...mesureFields].forEach(field => {
+      if (!regex.test(field.value)) {
+        alert("Veuillez entrer une valeur valide entre 0.01 et 9.99 (précision : 10^-2).");
+        isValid = false;
+      }
+    });
+
+    if (!isValid) {
+      event.preventDefault(); // Annule la soumission du formulaire
+    }
+  });
+</script>
+{% endblock %}

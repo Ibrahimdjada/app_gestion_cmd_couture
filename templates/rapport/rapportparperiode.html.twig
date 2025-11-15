@@ -1,0 +1,117 @@
+{% extends 'Layout_main.html.twig' %}
+
+{% block title %}
+
+  Rapports par periode
+{% endblock %}
+{% block content %}
+
+ <div class="container mt-4">
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+<br><br>
+<section class="content-header">
+  <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-10">
+            <h1>Entrez la periode</h1><br><br>
+			 {% if classe is defined %}
+			<div class="{{classe}}">{{resultat}}</div>
+		  {% endif %}
+          </div>
+         
+        </div>
+      </div><!-- /.container-fluid -->
+  </section>
+ <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <!-- /.card-header -->
+            <div class="card-body">
+              {{ form_start(form, {'attr': {'id': 'field_form'}}) }}
+              {{ form_errors(form) }}
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      {{ form_label(form.datDebut, "Date début", {'label_attr': {'class': 'form-label'}}) }}
+                      {{ form_widget(form.datDebut, {'attr': {'class': 'form-control' } }) }}
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      {{ form_label(form.datFin, "Date fin", {'label_attr': {'class': 'form-label'}}) }}
+                      {{ form_widget(form.datFin, {'attr': {'class': 'form-control' } }) }}
+                    </div>
+                  </div>
+                </div>
+              </div><br><br>
+              <div class="card-footer">
+              <button type="submit" class="btn btn-sm btn-success float-right">
+                  <i class="fa fa-save"></i>
+                  Sauvegarder</button>
+                {{ form_rest(form) }}
+                {{ form_end(form) }} 
+              <button type="button" class="btn btn-sm btn-default float-right mr-1 back" onclick='location.href="{{ path('rap_peride') }}"'>
+              <i class ="fa fa-ban"></i>Annuler</button></br>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+          <!-- /.row -->
+        </div>
+      </div>
+      <!-- /.container-fluid -->
+    </section>
+    <div class="container-fluid py-4">
+      <div class="row">
+        <div class="col-12">
+          <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n2 mx-3 z-index-2">
+              <div class="bg-gradient-primary shadow-primary border-radius-lg pt-3 pb-1">
+                <h6 class="text-white text-capitalize ps-3 d-flex justify-content-between align-items-center">
+                  Liste des Commandes
+                </h6>
+              </div>
+            </div>
+          <div class="card-body px-0 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table align-items-center mb-0">
+                <thead>
+                  <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nombre</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nom tailleur</th>
+                  </tr>
+                </thead>
+                <tbody>
+                      {% for commande in commande %}
+					          <td><strong>{{ commande['nombre'] }}</strong></td>
+                      <td><strong>{{ commande['firstName'] |capitaize_first}} {{ commande['lastName'] |capitaize_first}}</strong></td>
+                     </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}
+  
+  
+  

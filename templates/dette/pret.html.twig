@@ -1,0 +1,202 @@
+  {% extends 'layout_main.html.twig' %}
+{% block title %}Liste prets
+	{% endblock %}
+{% block autresfichierscss %}
+ 
+{% endblock %}
+{% block content %}
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Liste prets</h1>
+             {% if classe is defined %}
+			<div class="{{classe}}">{{resultat}}</div>
+		{% endif %}
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              {# <li class="breadcrumb-item"><a href="#">Accueil</a></li> #}
+              {# <li class="breadcrumb-item active">Liste prets</li> #}
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Tableau de liste des prets</h3>
+				          <div class="card-tools">
+                  <div class="input-group input-group-sm">
+                   <a href="{{ path('ajout_pret') }}" class="btn btn-success btn-sm ml-3">
+										<i class="fa fa-plus"></i>
+										Nouveau pret
+									</a>
+                  
+					        </div></div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="pret" class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>Id</th>
+                      <th>Nom & Prénom</th>
+                      <th>Date pret</th>
+                      <th>Date echeance</th>
+                      <th>periode</th>
+                      <th>Montant</th>
+                      <th>Par Mois</th>
+                      <th>Reste</th>
+                      <th>Statut</th>
+                      <th>Versement</th>
+                      <th>Actions</th>
+                       <th>Supprimer </th>
+							      </tr>
+				          </thead>
+                  <tbody>
+                  {% block alerts %}
+  {% for type, messages in app.session.flashBag.all %}
+    {% for message in messages %}
+        {%if type == 'error'%} {% set type = 'danger' %} {%endif%}
+        {%if type == 'message'%} {% set type = 'info' %} {%endif%}
+        <div class="alert alert-{{ type }} alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+            </button>
+            <p>{{ message|raw }}</p>
+        </div>
+    {% endfor %}
+  {% endfor %}
+                 {% endblock %}
+                    {% for pret in prets %}
+								    <tr>
+                      <td>{{ pret.id }}</td>
+                      
+                      <td>{% if  pret.usert %}
+                      {{ pret.usert.firstName |capitaize_first }} {{ pret.usert.lastName |capitaize_first}}
+                      
+                      {% else %}
+                      
+                      {% endif %}</td>
+                      <td ><strong>{{ pret.datP |date('d-m-Y') }} </strong></td>
+                    <td ><strong>{{ pret.datEch |date('d-m-Y') }}</strong></td>
+                    <td ><strong>{{ pret.prd}}</strong></td>
+                    <td style="color:blue"><strong>{{ pret.mntP |number_format(0, '.', ' ') }} FCFA</strong></td>
+                    <td ><strong>{{ pret.ms |number_format(0, '.', ' ') }} FCFA</strong></td>
+                    <td style="color:red"><strong>{{ pret.reste |number_format(0, '.', ' ') }} FCFA</strong></td>
+                    <td style="color:green"><strong>{{ pret.stat}}</strong></td>
+                      <td>{% if  pret.reste > 0 %}
+                            <a class="btn btn-sm btn-outline-success"style="color: blue; border-color: blue;" href="{{ path('pret_payer', {id: pret.id}) }}" 
+                            onclick="return confirm('Voulez-vous finaliser le versement ?')">
+                                  <i class="bi-check"></i>
+                                  <span class="sr-only">Versement</span>
+                              </a> 
+                               {% endif %}
+                      </td>   
+                        
+                       
+                      <td><a class="btn btn-info btn-sm" href="{{ path('edit_pret', {id: pret.id}) }}" onclick="return confirm('Etes-vous sûr de vouloir modifier cet pret ?')">
+                              <i class="fa fa-edit"></i>
+                              <span class="sr-only">Editer</span>
+                          </a> 
+									    </td>
+                      <td>
+                      <a class="btn btn-danger btn-sm" href="{{ path('delete_pret', {id: pret.id}) }}" onclick="return confirm('Etes-vous sûr de vouloir supprimer cet pret ?')">
+                                <i class="fa fa-trash"></i>
+                                <span class="sr-only">Supprimer</span>
+                            </a> 
+                            
+                        </td>
+								    </tr>
+						      	{% endfor %}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <th>Id</th>
+                      <th>Nom & Prénom</th>
+                      <th>Date pret</th>
+                      <th>Date echeance</th>
+                      <th>periode</th>
+                      <th>Montant</th>
+                      <th>Par Mois</th>
+                      <th>Reste</th>
+                      <th>Statut</th>
+                      <th>Versement</th>
+                      <th>Actions</th>
+                       <th>Supprimer </th>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+            
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div>
+      
+      <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+
+  {% endblock %}
+{% block autresFichiersJs %}
+<!-- jQuery -->
+<script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
+<!-- Bootstrap 4 -->
+<script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<!-- DataTables  & Plugins -->
+<script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('plugins/jszip/jszip.min.js') }}"></script>
+<script src="{{ asset('plugins/pdfmake/pdfmake.min.js') }}"></script>
+<script src="{{ asset('plugins/pdfmake/vfs_fonts.js') }}"></script>
+<script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+<!-- AdminLTE App -->
+<script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{{ asset('dist/js/demo.js') }}"></script>
+<!-- Page specific script -->
+<script>
+  $(function () {
+    $("#pret").DataTable({
+      "responsive": true,"aaSorting": [[0, "desc"]],oLanguage: {
+sSearch: "Rechercher : ",
+sZeroRecords: "Aucune valeur trouvée",
+sInfo: "Afficher page _PAGE_ sur _PAGES_",
+sInfoFiltered: "(Filtres sur _MAX_ )",
+sInfoEmpty: "",
+oPaginate: {
+sFirst: "Premier",
+sPrevious: "Pr&eacute;c&eacute;dent",
+sNext: "Suivant",
+sLast: "Dernier"
+}
+}, "lengthChange": false, "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#pret_wrapper .col-md-6:eq(0)');
+    
+  });
+</script>
+  {% endblock %}
+
+
+

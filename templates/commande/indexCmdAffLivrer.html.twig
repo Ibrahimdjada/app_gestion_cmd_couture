@@ -1,0 +1,141 @@
+{% extends 'Layout.html.twig' %}
+{% block title %}
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+  {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+ 
+
+  <title>Liste des commandes livrés</title>
+{% endblock %}
+
+{% block content %}
+
+ <div class="container mt-4">
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    <div class="container" style="padding-top: 30px;">
+        <div class="row mb-2">
+          <div class="col-sm-10">
+           
+          </div>
+           <div class="col-sm-2">
+            <ol class="breadcrumb float-sm-right">
+               <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+              <li class="breadcrumb-item active"></li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-->
+
+  <div class="container-fluid" style="padding-top: 0;">
+    <div class="row">
+      <div class="col-12">
+        <div class="card my-4">
+          <div class="card-header p-0 position-relative mt-n2 mx-3 z-index-2">
+            <div class="bg-gradient-primary shadow-primary border-radius-lg pt-3 pb-1">
+              <h6 class="text-white text-capitalize ps-3 d-flex justify-content-between align-items-center">
+                Liste des commandes livrés
+                 </h6>
+            </div>
+          </div>
+          <div class="card-body px-0 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table align-items-center mb-0">
+                <thead>
+                  <tr>
+                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">N° commande</th>
+                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nom clients</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">type commandes</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Date commandes</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Date recuperations</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Montants</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Avances</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Restes</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Statut</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nom tailleurs</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Modele</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tissu</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for commande in commande %}
+                    <tr>
+                    <td><strong>C-00000{{ commande.id }}</strong></td>
+                     <td>{% if  commande.user %}
+                      {{ commande.user.firstName |capitaize_first}} {{ commande.user.lastName |capitaize_first}}
+                      
+                      {% else %}
+                      
+                      {% endif %}
+                      </td>
+                      <td>{{ commande.typeCom }}</td>
+                      <td>{{ commande.datCom |date('Y-m-d')}}</td>
+                      <td><strong>{{ commande.datRec |date('Y-m-d')}}</strong></td>
+                      <td style="color:blue"><strong>{{ commande.montant|number_format(0, '.', ' ') }} FCFA</strong></td>
+                      <td><strong>{{ commande.avance|number_format(0, '.', ' ') }} FCFA</strong></td>
+                      <td style="color:red"><strong>{{ commande.reste|number_format(0, '.', ' ') }} FCFA</strong></td>
+                      <td style="color:green"><strong>{{ commande.statut }}</strong></td>
+                     <td>{% if  commande.usert %}
+                      {{ commande.usert.firstName |capitaize_first}} {{ commande.usert.lastName |capitaize_first}}
+                      
+                      {% else %}
+                      
+                      {% endif %}
+                      
+                      </td>
+                         <td>
+                            {% if  commande.pathMod is not empty %}
+                            
+                              <div class="file-list">
+                                {% for path in commande.pathMod %}
+                                  <div  class="file-item">
+                                    <a class="btn-outline-success " style="color: black; margin-button: -10px" 
+                                    href="{{ asset(path) }}" onclick="return confirm('Voulez-vous voir le modèle ?')">
+                                      <p>Modéle {{loop.index}}</p>
+                                    </a>
+                                  </div>
+                                {% endfor %}
+                              </div>
+                            {% else %}
+                                <p>Pas de modéle</p>
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if  commande.pathTissu is not empty %}
+                              <div class="file-list"> 
+                                {% for path in commande.pathTissu %}
+                                  <div  class="file-item">
+                                    <a class=" btn-outline-success " style="color: black; margin-button: -10px" href="{{ asset(path) }}" onclick="return confirm('Voulez-vous voir le tissu ?')">
+                                        <p>Tissu {{loop.index}}</p>
+                                    </a>
+                                  </div>
+                                {% endfor %}
+                              </div>
+                            {% else %}
+                              <p>Pas de tissu</p>
+                            {% endif %}
+                          </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

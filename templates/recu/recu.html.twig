@@ -1,0 +1,414 @@
+<head>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #FAFAFA;
+			font: 6pt "Tahoma";
+		}
+		body {
+			background: rgb(300, 300, 300);
+		}
+		page[size="A4"] {
+			background: white;
+			width: 21cm;
+			height: 29.7cm;
+			display: block;
+			margin: 0 auto 0.5cm 100px;
+			box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
+		}
+		@media print {
+			body,
+			page[size="A4"] {
+				margin: 0;
+				box-shadow: 0;
+			}
+		}
+		<page size="A4" > </page > <page size="A4" > </page > <page size="A4" > </page > #centrer {
+			background-color: #ededed;
+			margin-left: 30px; /*margin-left: none; si tu veux que ta page colle la bordure de gauche*/
+			margin-right: 50%;
+			width: 800px;
+			text-align: center;
+
+		}
+
+		table {
+			font-family: arial, sans-serif;
+			border-collapse: collapse;
+			width: 100%;
+		}
+
+		td,
+		th {
+			border: 0;
+			text-align: left;
+			padding: 2px;
+		}
+	</style>
+	<meta charset="UTF-8">
+</head>
+	<body onload="window.print();">
+		    <br/>
+			<br/>
+			<br/>
+			
+			<div id="centrer" style="width: 60%; margin-left: 40%; position: absolute;">
+				<h1>Reçu de commande</h1>
+
+				<h2>Reçu n°
+					C-00000{{ commande.id }}
+				</h2>
+       
+			</div>
+		</div> 
+		<br/>
+			<br/>
+			<br/>
+			<br/>
+            <br/>
+			<br/>
+			<br/>
+            <br/>
+			<br/>
+			<br/>
+            <br/>
+			<br/>
+			<br/>		
+		<div>
+			<table style="width:100%; margin-top: 3px;" >
+				<tr>
+					<td>
+						Client:
+						<b>{{ commande.user.firstName | upper}}
+							{{ commande.user.lastName | upper}}</b>
+					</td>
+                    <td>
+						Type de commande:
+						<b>{{ commande.typeCom }}</b>
+					</td>
+				</tr>
+			</table>
+            <br/>
+			<br/>
+			<br/>
+      <table style="width:100%; margin-top: 3px;" >
+				<tr>
+					<td>
+						Montant à payer:
+						<b>{{ commande.montant |number_format(0, ',', ' ') }}</b>
+            			<small>FCFA</small>
+						&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					</td>
+					 <td style="text-align: left ;">
+						Date de versemment:
+						<b>{{ commande.datCom |date('d-m-Y') }}</b>
+					</td>
+                    </tr>
+                    <tr>
+                    <td>
+						Montant verser:
+						<b>{{ commande.avance |number_format(0, ',', ' ') }}</b>
+            			<small>FCFA</small>
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					</td>  
+                    <td>
+						Restant à payer:
+						<b>{{ commande.reste |number_format(0, ',', ' ') }}</b>
+            			<small>FCFA</small>
+						&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					</td>
+				</tr>
+			</table>
+      	
+			<table style="width:100%">
+				<tr>
+					<td></td>
+				</tr>
+			</table>
+			<table style="width:100%">
+				<tr>
+					<td></td>
+				</tr>
+			</table>
+		
+
+			<br/>
+			<br/>
+			<br/>
+			<br/>
+			<br/>
+			<br/>
+			<br/> 
+			<td style="width:90%; text-align: right; font-size: .9em;"></td>
+			<h3 style="text-align: right;">signature</h3>
+			<table style="width:100%">
+				<tr>
+					<td style="width:50%; text-align: right;">
+				
+				<tr>
+					<td style="width: 50%; font-size: .5em;text-align: right;">
+						
+					</td>
+				</tr>
+			</table>
+            <br/>
+			<br/>
+			<br/>
+            <br/>
+			<br/>
+			----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		</div>
+    	    <br/>
+			<br/>
+			<br/>
+			
+			<div id="centrer" style="width: 60%; margin-left: 40%; position: absolute;">
+				<h1>Reçu de commande</h1>
+
+				<h2>Reçu n°
+					C-00000{{ commande.id }}
+				</h2>
+       
+			</div>
+		</div> 
+		<br/>
+			<br/>
+			<br/>
+			<br/>
+            <br/>
+			<br/>
+			<br/>
+            <br/>
+			<br/>
+			<br/>
+            <br/>
+			<br/>
+			<br/>
+			
+			 
+		<div>
+			<table style="width:100%; margin-top: 3px;" >
+				<tr>
+					<td>
+						Client:
+						<b>{{ commande.user.firstName | upper}}
+							{{ commande.user.lastName }}</b>
+					</td>
+                    <td>
+						Type de commande:
+						<b>{{ commande.typeCom }}</b>
+					</td>
+				</tr>
+			</table>
+             <br/>
+			<br/>
+			<br/>
+      <table style="width:100%; margin-top: 3px;" >
+				<tr>
+                    
+					<td>
+						Montant à payer:
+						<b>{{ commande.montant |number_format(0, ',', ' ') }}</b>
+            			<small>FCFA</small>
+						&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					</td>
+					<td style="text-align: left ;">
+						Date de versemment:
+						<b>{{ commande.datCom |date('d-m-Y') }}</b>
+					</td>
+                </tr>
+                    <tr>
+                    <td>
+						Montant verser:
+						<b>{{ commande.avance |number_format(0, ',', ' ') }}</b>
+            			<small>FCFA</small>
+						&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					</td>
+                    <td>
+						Restant à payer:
+						<b>{{ commande.reste |number_format(0, ',', ' ') }}</b>
+            			<small>FCFA</small>
+						&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					&nbsp;
+					</td>
+				</tr>
+			</table>
+      	
+			<table style="width:100%">
+				<tr>
+					<td></td>
+				</tr>
+			</table>
+			<table style="width:100%">
+				<tr>
+					<td></td>
+				</tr>
+			</table>
+		
+
+			<br/>
+			<br/>
+			<br/>
+			<br/>
+			<br/>
+			<br/>
+			<br/> 
+			<td style="width:90%; text-align: right; font-size: .9em;"></td>
+			<h3 style="text-align: right;">signature</h3>
+			<table style="width:100%">
+				<tr>
+					<td style="width:50%; text-align: right;">
+				
+				<tr>
+					<td style="width: 50%; font-size: .5em;text-align: right;">
+						
+					</td>
+				</tr>
+			</table>
+	</body>
+ </body>
+

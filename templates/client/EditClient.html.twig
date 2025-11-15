@@ -1,0 +1,94 @@
+{% extends 'layout_main.html.twig' %}
+{% block title %}Modification  client
+	{% endblock %}
+{% block content %}
+<section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Modification  client</h1>
+             {% if classe is defined %}
+			<div class="{{classe}}">{{resultat}}</div>
+		{% endif %}
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              {# <li class="breadcrumb-item"><a href="#">Accueil</a></li>
+              <li class="breadcrumb-item active">Modification  client</li> #}
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+	    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+     <div class="row">
+          <div class="col-12">
+
+            <div class="card">
+              <div class="card-header">
+                {# {% if action == 'create' %}
+						<h2 class="card-title">Nouvelle structure</h2>
+					{% endif %} #}
+					{# {% if action == 'edit' %}
+						<h2 class="card-title">Modifier l'client [{{ client.username }}]</h2>
+					{% endif %} #}
+                    </div>
+<div class="container form-section">
+    <div class="row">
+        <div class="col-md-8">
+            <form method="POST">
+                {{ form_start(form) }}
+                 <div class="form-group">
+      {{ form_label(form.firstName, 'Nom') }}
+      {{ form_widget(form.firstName, {'attr': {'class': 'form-control'}}) }}
+   
+      {{ form_label(form.lastName, 'Prénom') }}
+      {{ form_widget(form.lastName, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    <div class="form-group">
+      {{ form_label(form.telephone, 'Téléphone') }}
+      {{ form_widget(form.telephone, {'attr': {'class': 'form-control',
+      'placeholder':'Entrez votre téléphone',
+      'pattern':'^\\d{8}$',
+      'title':'Le numéro de téléphone doit contenir exactement 8 caractéres.',
+      'maxlength':'8',
+      'minlength':'8',}}) }}
+   
+      {{ form_label(form.email, 'Email') }}
+      {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    <div class="form-group">
+      {{ form_label(form.adresse, 'Adresse') }}
+      {{ form_widget(form.adresse, {'attr': {'class': 'form-control'}}) }}
+    </div>
+                <div class="form-group" style="padding-left: 40px;">
+            <button type="submit" class="btn btn-primary"style="margin-right:15px">modifier</button>
+            <i class ="fa fa-ban"><a href="{{ path('client_list')}}"> <strong>Annuler</strong></a></i>
+
+             </div>
+                {{ form_end(form) }}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block autresFichiersJs %}
+<!-- jQuery -->
+<script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
+<!-- Bootstrap 4 -->
+<script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<!-- AdminLTE App -->
+<script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{{ asset('dist/js/demo.js') }}"></script>
+<!-- Summernote -->
+<script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
+<script>
+  $(function () {
+    // Summernote
+    $('.textarea').summernote()
+  })
+</script>
+{% endblock %}

@@ -1,0 +1,176 @@
+  {% extends 'layout_main.html.twig' %}
+{% block title %}Liste tailleurs
+	{% endblock %}
+{% block autresfichierscss %}
+ 
+{% endblock %}
+{% block content %}
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Liste tailleurs</h1>
+             {% if classe is defined %}
+			<div class="{{classe}}">{{resultat}}</div>
+		{% endif %}
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              {# <li class="breadcrumb-item"><a href="#">Accueil</a></li> #}
+              {# <li class="breadcrumb-item active">Liste tailleurs</li> #}
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Tableau de liste des tailleurs</h3>
+				          <div class="card-tools">
+                  <div class="input-group input-group-sm">
+                   <a href="{{ path('ajout_tailleur') }}" class="btn btn-success btn-sm ml-3">
+										<i class="fa fa-plus"></i>
+										Nouveau tailleur
+									</a>
+					        </div></div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="tailleur" class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>Id</th>
+                      <th>Nom & Prénom</th>
+                      <th>E-mail</th>
+                      <th>Telephone</th>
+                      <th>Adresse</th>
+                      <th>Actions</th>
+                       <th>Supprimer </th>
+							      </tr>
+				          </thead>
+                  <tbody>
+                  {% block alerts %}
+  {% for type, messages in app.session.flashBag.all %}
+    {% for message in messages %}
+        {%if type == 'error'%} {% set type = 'danger' %} {%endif%}
+        {%if type == 'message'%} {% set type = 'info' %} {%endif%}
+        <div class="alert alert-{{ type }} alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+            </button>
+            <p>{{ message|raw }}</p>
+        </div>
+    {% endfor %}
+  {% endfor %}
+                 {% endblock %}
+                    {% for tailleur in tailleurs %}
+								    <tr>
+                      <td>{{ tailleur.id }}</td>
+                      
+                      <td>{{ tailleur.firstName |capitaize_first}} {{ tailleur.lastName |capitaize_first}}</td>
+                      <td style="color:blue"><strong>{{ tailleur.telephone }}</strong></td>
+                    <td style="color:green"><strong>{{ tailleur.email }}</strong></td>
+                    <td><strong>{{ tailleur.adresse }}</strong></td>
+                      
+                         {# {%if is_granted(role_admin) %} #}
+                       
+                      <td><a class="btn btn-info btn-sm" href="{{ path('edit_tailleur', {id: tailleur.id}) }}" onclick="return confirm('Etes-vous sûr de vouloir modifier cet tailleur ?')">
+                              <i class="fa fa-edit"></i>
+                              <span class="sr-only">Editer</span>
+                          </a> 
+                          
+									      </td>
+                <td><a class="btn btn-danger btn-sm" href="#" onclick="return confirm('Etes-vous sûr de vouloir désactiver cet tailleur ?')">
+                              <i class="fa fa-trash"></i>
+                              <span class="sr-only">Désactiver</span>
+                          </a> 
+                          
+									      </td>
+                        {# {% endif %} #}
+								    </tr>
+						      	{% endfor %}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <th>Id</th>
+                      <th>Nom & Prénom</th>
+                      <th>E-mail</th>
+                       <th>Telephone</th>
+                       <th>Adresse</th>
+                      <th>Actions</th>
+                       <th>Supprimer </th>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+            
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div>
+      
+      <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+
+  {% endblock %}
+{% block autresFichiersJs %}
+<!-- jQuery -->
+<script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
+<!-- Bootstrap 4 -->
+<script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<!-- DataTables  & Plugins -->
+<script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('plugins/jszip/jszip.min.js') }}"></script>
+<script src="{{ asset('plugins/pdfmake/pdfmake.min.js') }}"></script>
+<script src="{{ asset('plugins/pdfmake/vfs_fonts.js') }}"></script>
+<script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+<!-- AdminLTE App -->
+<script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{{ asset('dist/js/demo.js') }}"></script>
+<!-- Page specific script -->
+<script>
+  $(function () {
+    $("#tailleur").DataTable({
+      "responsive": true,"aaSorting": [[0, "desc"]],oLanguage: {
+sSearch: "Rechercher : ",
+sZeroRecords: "Aucune valeur trouvée",
+sInfo: "Afficher page _PAGE_ sur _PAGES_",
+sInfoFiltered: "(Filtres sur _MAX_ )",
+sInfoEmpty: "",
+oPaginate: {
+sFirst: "Premier",
+sPrevious: "Pr&eacute;c&eacute;dent",
+sNext: "Suivant",
+sLast: "Dernier"
+}
+}, "lengthChange": false, "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#tailleur_wrapper .col-md-6:eq(0)');
+    
+  });
+</script>
+  {% endblock %}
+
+
+

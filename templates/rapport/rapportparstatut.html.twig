@@ -1,0 +1,193 @@
+{% extends 'Layout_main.html.twig' %}
+
+{% block title %}
+Rapports par Statut
+{% endblock %}
+{% block content %}
+
+ <div class="container mt-4">
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+<br><br>
+<section class="content-header">
+  <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-10">
+            <h3>Entrez la periode avec la statut</h3><br><br>
+			     {% if classe is defined %}
+            <div class="{{classe}}">{{resultat}}</div>
+            {% endif %}
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+ <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+     <div class="row">
+          <div class="col-12">
+
+           
+              <!-- /.card-header -->
+              <div class="card-body">
+       
+				{{ form_start(form, {'attr': {'id': 'field_form'}}) }}
+				{{ form_errors(form) }}
+				<div class="card-body">
+				<div class="row">
+				
+				 <div class="col-md-4">
+                 <div class="form-group">
+                {{ form_label(form.datDebut, "Date début", {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.datDebut, {'attr': {'class': 'form-control' } }) }}
+        
+                </div></div>
+                 <div class="col-md-4">
+                <div class="form-group">
+                    {{ form_label(form.datFin, "Date fin", {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.datFin, {'attr': {'class': 'form-control' } }) }}
+                    
+                </div></div>
+                  <div class="col-md-4">
+                <div class="form-group">
+                    {{ form_label(form.stat, "statut", {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.stat, {'attr': {'class': 'form-control' } }) }}
+                    
+                </div></div>
+					
+				</div></div><br><br>
+				<div class="card-footer">
+					<button type="submit" class="btn btn-sm btn-success float-right">
+						<i class="fa fa-save"></i>
+						Sauvegarder</button>
+					{{ form_rest(form) }}
+					{{ form_end(form) }} 
+				<button type="button" class="btn btn-sm btn-default float-right mr-1 back" onclick='location.href="{{ path('rap_statut') }}"'>
+				<i class ="fa fa-ban"></i>Annuler</button>
+				
+				</br>
+				
+			
+
+          </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        <!-- /.row -->
+      </div>
+      <!-- /.container-fluid -->
+    </section>
+    <div class="container-fluid py-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="card my-4">
+          <div class="card-header p-0 position-relative mt-n2 mx-3 z-index-2">
+            <div class="bg-gradient-primary shadow-primary border-radius-lg pt-3 pb-1">
+              <h6 class="text-white text-capitalize ps-3 d-flex justify-content-between align-items-center">
+                Liste des Commandes
+               </h6>
+            </div>
+          </div>
+          <div class="card-body px-0 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table align-items-center mb-0">
+                <thead>
+                  <tr>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">N° commande</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nom clients</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">type commandes</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Date commandes</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Date recuperations</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Montants</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Avances</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Restes</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Statut</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nom tailleurs</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Modele</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tissu</th>
+                 </tr>
+                </thead>
+                <tbody>
+                       {% for commande in commande %}
+								    <tr>
+                      <td><strong>C-00000{{ commande.id }}</strong></td>
+                     <td>{% if  commande.user %}
+                      {{ commande.user.firstName }} {{ commande.user.lastName }}
+                      
+                      {% else %}
+                      
+                      {% endif %}
+                      </td>
+                      <td>{{ commande.typeCom }}</td>
+                      <td>{{ commande.datCom |date('Y-m-d')}}</td>
+                      <td><strong>{{ commande.datRec |date('Y-m-d')}}</strong></td>
+                      <td style="color:blue"><strong>{{ commande.montant|number_format(0, '.', ' ') }} FCFA</strong></td>
+                      <td><strong>{{ commande.avance|number_format(0, '.', ' ') }} FCFA</strong></td>
+                      <td style="color:red"><strong>{{ commande.reste|number_format(0, '.', ' ') }} FCFA</strong></td>
+                      <td style="color:green"><strong>{{ commande.statut }}</strong></td>
+                     <td>{% if  commande.usert %}
+                      {{ commande.usert.firstName |capitaize_first}} {{ commande.usert.lastName |capitaize_first}}
+                      
+                      {% else %}
+                      
+                      {% endif %}
+                      
+                      </td>
+                      <td>
+                            {% if  commande.pathMod is not empty %}
+                            
+                              <div class="file-list">
+                                {% for path in commande.pathMod %}
+                                  <div  class="file-item">
+                                    <a class="btn-outline-success " style="color: black; margin-button: -10px" 
+                                    href="{{ asset(path) }}" onclick="return confirm('Voulez-vous voir le modèle ?')">
+                                      <p>Modéle {{loop.index}}</p>
+                                    </a>
+                                  </div>
+                                {% endfor %}
+                              </div>
+                            {% else %}
+                                <p>Pas de modéle</p>
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if  commande.pathTissu is not empty %}
+                              <div class="file-list"> 
+                                {% for path in commande.pathTissu %}
+                                  <div  class="file-item">
+                                    <a class=" btn-outline-success " style="color: black; margin-button: -10px" href="{{ asset(path) }}" onclick="return confirm('Voulez-vous voir le tissu ?')">
+                                        <p>Tissu {{loop.index}}</p>
+                                    </a>
+                                  </div>
+                                {% endfor %}
+                              </div>
+                            {% else %}
+                              <p>Pas de tissu</p>
+                            {% endif %}
+                          </td>
+                       </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}
+  
+  
+  

@@ -1,0 +1,153 @@
+{% extends 'layout_main.html.twig' %}
+{% block title %}
+ Profile
+{% endblock %}
+{% block content %}
+<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Tell the browser to be responsive to screen width -->
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords"
+        content="wrappixel, admin dashboard, html css dashboard, web dashboard, bootstrap 5 admin, bootstrap 5, css3 dashboard, bootstrap 5 dashboard, Ample lite admin bootstrap 5 dashboard, frontend, responsive bootstrap 5 admin template, Ample admin lite dashboard bootstrap 5 dashboard template">
+    <meta name="description"
+        content="Ample Admin Lite is powerful and clean admin dashboard template, inpired from Bootstrap Framework">
+    <meta name="robots" content="noindex,nofollow">
+    <title>Mon profil</title>
+    <link rel="canonical" href="https://www.wrappixel.com/templates/ample-admin-lite/" />
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="plugins/images/favicon.png">
+    <!-- Custom CSS -->
+   <link href="css/style.min.css" rel="stylesheet">
+  <style>
+    #images{
+        background-size: cover;
+        background-position: center;
+        
+    }
+  </style>
+    <div class="container mt-4">
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    
+    <div class="preloader">
+        <div class="lds-ripple">
+            <div class="lds-pos"></div>
+            <div class="lds-pos"></div>
+        </div>
+    </div>
+    <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full"
+        data-sidebar-position="absolute" data-header-position="absolute" data-boxed-layout="full">
+       
+        <div class="page-wrapper">
+            <div class="page-breadcrumb bg-white">
+                <div class="row align-items-center">
+                    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                        <h4 class="page-title">Profile</h4>
+                    </div>
+                    
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            
+           
+            <div class="container-fluid">
+               
+                <div class="row">
+                    <!-- Column -->
+                    <div class="col-lg-4 col-xlg-3 col-md-12">
+                        <div class="white-box">
+                            <div class="user-bg"> <img width="100%"  src="">
+                                <div class="overlay-box" >
+                                    <div class="user-content text-center">
+                                        {# User icon (inline SVG) used instead of external image for consistency #}
+                                        <div class="mb-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="bi bi-person-circle text-secondary">
+                                              <path d="M11 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+                                              <path d="M22 12a10 10 0 1 0-20 0 10 10 0 0 0 20 0z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <h4 class="text-black mt-2">{{ app.user.username }}</h4>
+                        <h5 class="text-black mt-2">{{ app.user.email }}</h5>
+                        </div>
+                        
+                    </div>
+                   
+                    <div class="col-lg-8 col-xlg-9 col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form method="POST" class="form-horizontal form-material">
+                               
+                                {{ form_start(form, {'attr': {'class':'form-horizontal form-material'}}) }}
+                                    <div class="form-group mb-4">
+                                      {{ form_label(form.firstName, 'Nom') }}
+                                        {{ form_widget(form.firstName, {'attr': {'class': 'form-control'}}) }}
+                                        </div>
+                                     <div class="form-group mb-4">
+                                        {{ form_label(form.lastName, 'Prénom') }}
+                                        {{ form_widget(form.lastName, {'attr': {'class': 'form-control'}}) }}
+                                        </div>
+                                    <div class="form-group mb-4">
+                                       {{ form_label(form.email, 'Email') }}
+                                        {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                                        </div>
+                                    <div class="form-group mb-4">
+                                        {{ form_label(form.telephone, 'Téléphone') }}
+                                        {{ form_widget(form.telephone, {'attr': {'class': 'form-control'}}) }}
+    
+                                    </div>
+                                    <div class="form-group mb-4">
+                                         {{ form_label(form.password.first, 'Mot de passe') }}
+                                         {{ form_widget(form.password.first, {'attr': {'class': 'form-control'}}) }}
+    
+                                    </div>
+                                     <div class="form-group mb-4">
+                                         {{ form_label(form.password.second, 'Confirmer le mot de passe') }}
+                                        {{ form_widget(form.password.second, {'attr': {'class': 'form-control'}}) }}
+   
+                                    </div>
+                                     <div class="form-group mb-4">
+                                        {{ form_label(form.adresse, 'Adresse') }}
+                                        {{ form_widget(form.adresse, {'attr': {'class': 'form-control'}}) }}
+    
+                                    </div>
+                                    <div class="form-group mb-4">
+                                        <div class="col-sm-12">
+                                            <button class="btn btn-success">Mettre à jour le Profile</button>
+                                        </div>
+                                    </div>
+                                   {{ form_end(form) }}
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Column -->
+                </div>
+                </div>
+            </div>
+       
+    </div>
+   
+    <script src="plugins/bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app-style-switcher.js"></script>
+    <!--Wave Effects -->
+    <script src="js/waves.js"></script>
+    <!--Menu sidebar -->
+    <script src="js/sidebarmenu.js"></script>
+    <!--Custom JavaScript -->
+    <script src="js/custom.js"></script>
+{% endblock %}

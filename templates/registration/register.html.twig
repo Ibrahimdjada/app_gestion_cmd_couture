@@ -1,0 +1,152 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+<style>
+    body {
+        background: url('https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+        background-size: cover;
+    }
+    .register-outer {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 0;
+    }
+    .register-card {
+        border-radius: 20px;
+        box-shadow: 0 4px 24px 0 rgba(0,0,0,0.18);
+        overflow: hidden;
+        max-width: 520px;
+        width: 100%;
+        margin: 0 auto;
+        background: rgba(255,255,255,0.97);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .register-header {
+        background: linear-gradient(90deg, #ec407a 0%, #d81b60 100%);
+        border-radius: 0 0 30px 30px;
+        padding: 32px 24px 16px 24px;
+        margin-bottom:20px;
+        margin-left:10px;
+        margin-right:10px;
+        text-align: center;
+    }
+    .register-header h1 {
+        color: #fff;
+        font-weight: bold;
+        margin: 0;
+        letter-spacing: 1px;
+    }
+    .register-card .form-control {
+        border-radius: 8px;
+        background: #f5f5f5;
+        border: 1px solid #e0e0e0;
+        width: 100%;
+        max-width: 420px;
+        font-size: 1rem;
+        margin: 0 auto 0 auto;
+        display: block;
+    }
+    .register-card label {
+        margin-left: 20px;
+    }
+    .form-group.d-flex {
+        justify-content: center !important;
+        gap: 18px;
+    }
+    .form-group {
+        margin-bottom: 22px;
+    }
+    .form-check {
+        margin-bottom: 22px;
+    }
+</style>
+
+<div class="register-outer">
+    <div class="register-card">
+        <div class="register-header">
+            <h1>Veuillez Remplir</h1>
+        </div>
+        <div class="p-4">
+        {% if form_errors(registrationForm) %}
+            <div class="alert alert-danger">
+                {{ form_errors(registrationForm) }}
+            </div>
+        {% endif %}
+
+    {{ form_start(registrationForm) }}
+        <div class="form-group d-flex justify-content-between">
+            {{ form_row(registrationForm.username, {
+                label: 'Username',
+                'attr': {'class': 'form-control',
+                'placeholder':'Entrez votre nom pseudo'
+            }}) }}
+        
+            {{ form_row(registrationForm.email, {
+                label: 'Email',
+                'attr': {'class': 'form-control',
+                'placeholder':'Entrez votre l\'email'
+                }}) }}
+        
+        </div>
+        <div class="form-group d-flex justify-content-between">
+            {{ form_row(registrationForm.firstName, {
+                label: 'Nom',
+                'attr': {'class': 'form-control',
+            'placeholder':'Entrez votre prénom'
+            }}) }}
+      
+            {{ form_row(registrationForm.lastName, {
+                label: 'Prenom',
+                'attr': {'class': 'form-control',
+            'placeholder':'Entrez votre nom'
+            }}) }}
+        </div>
+          <div class="form-group d-flex justify-content-between">
+            {{ form_row(registrationForm.telephone, {
+                label: 'Téléphone',
+                'attr': {'class': 'form-control',
+            'placeholder':'Entrez votre téléphone'
+            }}) }}
+     
+            {{ form_row(registrationForm.adresse, {
+                label: 'Adresse',
+                'attr': {'class': 'form-control',
+            'placeholder':'Entrez votre adresse'
+            }}) }}
+        </div>
+         <div class="form-group d-flex justify-content-between">
+             {{ form_row(registrationForm.plainPassword, {
+                label: 'Mot de passe',
+                'attr': {'class': 'form-control',
+            'placeholder':'Entrez le mot de passe'
+            }}) }}
+             {{ form_row(registrationForm.confirmPassword, {
+                label: 'Confirmer le mot de passe',
+                'attr': {'class': 'form-control',
+            'placeholder':'Ressaisissez mot de passe'
+            }}) }}
+        </div>
+       
+        <div class="form-group form-check">
+            {{ form_row(registrationForm.agreeTerms, {
+                'attr': {'class': 'form-check-input'}
+            }) }}
+        </div>
+        <div class="d-flex justify-content-center align-items-center gap-3 mt-3">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+         
+             <button type="submit" class="btn btn-primary">Valider</button>&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="{{ path('app_login')}}" class="btn btn-secondary ms-2">Annuler</a>
+            </div>
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

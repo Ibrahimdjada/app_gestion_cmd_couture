@@ -1,0 +1,91 @@
+{% extends 'layout_main.html.twig' %}
+{% block title %}Nouvel commande
+	{% endblock %}
+{% block content %}
+<section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Nouvel commande</h1>
+			 {% if classe is defined %}
+			<div class="{{classe}}">{{resultat}}</div>
+		{% endif %}
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              {# <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+              <li class="breadcrumb-item active">Nouvel client</li> #}
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+	    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+     <div class="row">
+          <div class="col-12">
+
+            <div class="card">
+              {# <div class="card-header">
+                {% if action == 'create' %}
+						<h2 class="card-title">Nouvel client</h2>
+					{% endif %}
+					{% if action == 'edit' %}
+						<h2 class="card-title">Modifier client [{{ client.username }}]</h2>
+					{% endif %}
+              </div> #}
+   <div class="card-body">
+  <div class="container" style="padding-top: 0;">
+
+  <h3>Formulaire d'ajout de commande</h3><br>
+
+    {{ form_start(form) }}
+   
+    <div class="form-group">
+      {{ form_label(form.typeCom, 'Type commande') }}
+      {{ form_widget(form.typeCom, {'attr': {'class': 'form-control',
+      'placeholder':'Entrez le type de commande'
+      }}) }} 
+       </div>
+    
+   <div class="form-group">
+        {{ form_label(form.datRec, "Date recuperation ", {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.datRec, {'attr': {'class': 'form-control',
+      'placeholder':'Entrez la date de recuperation'
+      }}) }}        
+    </div>
+    
+    <div class="form-group">
+      {{ form_label(form.montant, 'Montant (FCFA)') }}
+      {{ form_widget(form.montant, {'attr': {'class': 'form-control',
+      'placeholder':'Entrez le montant'
+      }}) }}
+    </div>
+    <div class="form-group">
+      {{ form_label(form.avance, 'Avance (FCFA)') }}
+      {{ form_widget(form.avance, {'attr': {'class': 'form-control',
+      'placeholder':'Entrez l\'avance'
+      }}) }}  
+    </div>
+  
+    <div class="form-group">
+      {{ form_label(form.filemod, 'Modele') }}
+      {{ form_widget(form.filemod, {'attr': {'class': 'form-control'
+      }}) }}  
+    </div>
+    <div class="form-group">
+      {{ form_label(form.filetissu, 'Tissu') }}
+      {{ form_widget(form.filetissu, {'attr': {'class': 'form-control'
+      }}) }}  
+    </div>
+     
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary"style="margin-right:15px">Enregistrer</button>
+      <i class ="fa fa-ban"><a href="{{ path('list_commande')}}"> <strong>Annuler</strong></a></i>
+
+    </div>
+    {{ form_end(form) }}
+  
+</div>
+{% endblock %}

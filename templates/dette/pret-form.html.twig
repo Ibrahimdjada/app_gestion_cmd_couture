@@ -1,0 +1,97 @@
+{% extends 'layout_main.html.twig' %}
+{% block title %}Nouveau pret
+	{% endblock %}
+{% block content %}
+<section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Nouveau pret</h1>
+			 {% if classe is defined %}
+			<div class="{{classe}}">{{resultat}}</div>
+		{% endif %}
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              {# <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li> #}
+              {# <li class="breadcrumb-item active"><a href="{{ path('ajout_client') }}">Nouvel client</a></li> #}
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+	    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+     <div class="row">
+          <div class="col-12">
+
+            <div class="card">
+              {# <div class="card-header">
+                {% if action == 'create' %}
+						<h2 class="card-title">Nouvel client</h2>
+					{% endif %}
+					{% if action == 'edit' %}
+						<h2 class="card-title">Modifier client [{{ client.username }}]</h2>
+					{% endif %}
+              </div> #}
+   <div class="card-body">
+  <div class="container" style="padding-top: 0;">
+
+  <h3>Formulaire d'ajout</h3><br>
+  <form action="{{ path('ajout_pret') }}" method="post" enctype="multipart/form-data">
+  {{ form_start(form) }}
+     <div class="form-group">
+      {{ form_label(form.usert, 'Nom tailleur') }}
+      {{ form_widget(form.usert, {'attr': {'class': 'form-control',
+      'placeholder':'Entrez le nom du tailleur'
+      }}) }}
+          </div>
+    
+  
+           <div class="form-group">
+						{{ form_label(form.datEch, "Date d'echéance", {'label_attr': {'class': 'form-label'}}) }}
+						{{ form_widget(form.datEch, {'attr': {'class': 'form-control' ,
+      'placeholder':'Entrez la Date d\'echéance'
+      }}) }}
+
+						
+					</div>
+    <div class="form-group">
+      {{ form_label(form.prd, 'Nombre de tranche') }}
+      {{ form_widget(form.prd, {'attr': {'class': 'form-control',
+      'placeholder':'Entrez le nombre de tranche'
+      }}) }}
+          </div>
+    
+    <div class="form-group">
+      {{ form_label(form.mntP, 'Montant (FCFA)') }}
+      {{ form_widget(form.mntP, {'attr': {'class': 'form-control',
+      'placeholder':'Entrez le montant'
+      }}) }}
+          </div>
+     
+    <div class="form-group">
+     
+        <button type="submit" class="btn btn-primary" style="margin-right:15px">Enregistrer</button>
+        <i class ="fa fa-ban"><a href="{{ path('list_pret')}}"> <strong>Annuler</strong></a></i>
+     
+    </div>
+    {{ form_end(form) }}
+ </form>
+</div> 
+<script>
+    $(document).ready(function() {
+        $('#usert-select').select2({
+            placeholder: 'Sélectionnez le tailleur',
+            allowClear: true,
+        });
+    });
+</script>
+
+{% endblock %}
+
+
+
+
+
