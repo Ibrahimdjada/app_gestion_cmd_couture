@@ -34,15 +34,28 @@ class ClientController extends BaseController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }
                 
             $clients = $entityManager->getRepository(User::class)->findBy(['isClient' => true]);
-            
+            $users = $entityManager->getRepository(User::class)->findBy(['isActive' => true]);
+            $disabledUsers = $entityManager->getRepository(User::class)->findBy(['isActive' => false]);
+                
+                $newclient = new User();
+            $addForm = $this->createForm(ClientType::class, $newclient);
+
+            // Formulaire édition par utilisateur
+            $editForms = [];
+            foreach ($clients as $client) {
+                $editForms[$client->getId()] = $this->createForm(ClientType::class, $client)->createView();
+        }
                 return $this->render('client/IndexClient.html.twig', [
                 'clients' => $clients,
+                'disabledUsers' => $disabledUsers,
+                'form' => $addForm->createView(),
+                'editForms' => $editForms,
             ]);
            
         }
@@ -58,11 +71,7 @@ class ClientController extends BaseController
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            return $this->render('ErrorPage.html.twig');
-        }
+        
         $user = new User();
         $user->setIsClient(true); // Par défaut, cet utilisateur sera un client
         $form = $this->createForm(ClientType::class, $user);
@@ -70,7 +79,7 @@ class ClientController extends BaseController
         
         // var_dump($user);
         if ($form->isSubmitted() && $form->isValid()) {
-            try {
+           
 
                 $hashedPassword = $passwordHasher->hashPassword(
                     $user,
@@ -79,8 +88,13 @@ class ClientController extends BaseController
                 $user->setPassword($hashedPassword);
                 $rolet = ["ROLE_CLIENT"];
                 $user->setRoles($rolet);
-                $username = $user->getFirstName();
-                $user->setUsername($username);
+               
+               $usernameBase = $user->getFirstName() . '.' . $user->getLastName();
+
+            $user->setUsername(
+                $this->generateUniqueUsername($usernameBase, $entityManager)
+            );
+
                 $entityManager->persist($user);
                 $entityManager->flush();
                 
@@ -88,13 +102,7 @@ class ClientController extends BaseController
                    return $this->redirectToRoute('ajout_mesurecl', array('client' => $user->getId()));
                     //return $this->redirectToRoute('app_choix', array('client' => $user->getId()));
             
-                }  catch (\Exception $e) {
-                    // Ajouter un flash message d'erreur générique
-                    $this->addFlash('error', 'Une erreur est survenue lors de l\'ajout du client.');
-                    // Vous pouvez aussi ajouter un message spécifique selon l'erreur, par exemple :
-                    // $this->addFlash('error', 'Erreur : ' . $e->getMessage());
-                }
-        }
+                } 
                 return $this->render('client/FormClient.html.twig', [
                     'form' => $form->createView(),
                 ]);
@@ -112,11 +120,7 @@ class ClientController extends BaseController
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            return $this->render('ErrorPage.html.twig');
-        }
+       
         $user = new User();
         $user->setIsClient(true); // Par défaut, cet utilisateur sera un client
         $form = $this->createForm(ClientType::class, $user);
@@ -166,11 +170,7 @@ class ClientController extends BaseController
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            return $this->render('ErrorPage.html.twig');
-        }
+       
         // Récupérer l'utilisateur à modifier
         $user = $entityManager->getRepository(User::class)->find($id);
        
@@ -180,18 +180,17 @@ class ClientController extends BaseController
        
         if ($form->isSubmitted() && $form->isValid()) {
             // Récupérer le mot de passe et le confirmer
-            try {
-                $username = $user->getFirstName();
-            $user->setUsername($username);
+            
+               $usernameBase = $user->getFirstName() . '.' . $user->getLastName();
+
+                $user->setUsername(
+                    $this->generateUniqueUsername($usernameBase, $entityManager)
+                );
                 // Persist les modifications
             $entityManager->flush();
             $this->addFlash('success', 'Client mis à jour avec succès.');
             return $this->redirectToRoute('client_list');
-                } catch (\Exception $e) {
-                    // En cas d'erreur lors de la mise à jour
-                    $this->addFlash('error', 'Une erreur est survenue lors de la mise à jour des informations du mesure.');
-                    
-                }
+               
             }
 
         return $this->render('client/EditClient.html.twig', [
@@ -211,7 +210,7 @@ public function delete(EntityManagerInterface $entityManager, int $id): Response
         $roles = $users->getRoles();
         $role = $roles[0];
     if (
-         $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+         $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
     ) {
         return $this->render('ErrorPage.html.twig');
     }
@@ -227,4 +226,47 @@ public function delete(EntityManagerInterface $entityManager, int $id): Response
 
     return $this->redirectToRoute('client_list');
 }
+#[Route('/desact_clients/{id}/desactiver', name: 'desact_client', methods: ['POST'])]
+    public function desactiver(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    {
+        $users = $this->getUser();
+
+        if (!$users) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $roles = $users->getRoles();
+        $role = $roles[0];
+
+        if ($role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER) {
+            return $this->render('ErrorPage.html.twig');
+        }
+
+        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
+
+            // ❌ au lieu de remove(), on désactive
+            $user->setIsActive(false);
+            $user->setDeletedAt(new \DateTime()); // optionnel si tu veux garder une date de désactivation
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Utilisateur désactivé avec succès.');
+        }
+
+        return $this->redirectToRoute('list_user');
+    }
+private function generateUniqueUsername(string $base, EntityManagerInterface $em): string
+    {
+        $username = strtolower($base);
+        $original = $username;
+        $i = 1;
+
+        // Vérifie si déjà utilisé
+        while ($em->getRepository(User::class)->findOneBy(['username' => $username])) {
+            $username = $original . $i;
+            $i++;
+        }
+
+        return $username;
+    }
 }

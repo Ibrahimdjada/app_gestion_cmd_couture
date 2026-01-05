@@ -1,0 +1,68 @@
+{% extends 'layout_main.html.twig' %}
+{% block title %}Commandes annulées{% endblock %}
+{% block content %}
+<div class="modal fade show" id="modalCommandesAnnulees" tabindex="-1" role="dialog" aria-labelledby="modalCommandesAnnuleesLabel" aria-modal="true" style="display:block;background:rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalCommandesAnnuleesLabel">Commandes annulées</h5>
+        <a href="{{ path('list_commande') }}" class="close" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </a>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped table-sm">
+            <thead>
+              <tr>
+                <th>N° commande</th>
+                <th>Client</th>
+                <th>Type</th>
+                <th>Date commande</th>
+                <th>Montant</th>
+                <th>Statut</th>
+                <th>Date annulation</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for commande in commandes %}
+                <tr>
+                  <td><strong>C-00000{{ commande.id }}</strong></td>
+                  <td>{% if commande.user %}{{ commande.user.firstName }} {{ commande.user.lastName }}{% endif %}</td>
+                  <td>{{ commande.typeCom }}</td>
+                  <td>{{ commande.datCom|date('Y-m-d') }}</td>
+                  <td>{{ commande.montant|number_format(0, '.', ' ') }} FCFA</td>
+                  <td><span class="badge badge-danger">{{ commande.statut }}</span></td>
+                  <td>{{ commande.deletedAt ? commande.deletedAt|date('Y-m-d H:i') : '' }}</td>
+                  <td>
+                    <a class="btn btn-success btn-sm" href="{{ path('annuler_commande', {'id': commande.id, 'restore': 1}) }}" onclick="return confirm('Restaurer cette commande ?')">
+                      <i class="fa fa-undo"></i> Restaurer
+                    </a>
+                    <a class="btn btn-danger btn-sm" href="{{ path('supprimer_commande', {'id': commande.id}) }}" onclick="return confirm('Supprimer définitivement cette commande ?')">
+                      <i class="fa fa-trash"></i> Supprimer
+                    </a>
+                  </td>
+                </tr>
+              {% else %}
+                <tr><td colspan="8" class="text-center">Aucune commande annulée</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="{{ path('list_commande') }}" class="btn btn-secondary">Fermer</a>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+body.modal-open {
+  overflow: hidden;
+}
+</style>
+<script>
+document.body.classList.add('modal-open');
+</script>
+{% endblock %}

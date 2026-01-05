@@ -13,8 +13,7 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              {# <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
-              <li class="breadcrumb-item active">Nouvel client</li> #}
+              
             </ol>
           </div>
         </div>
@@ -27,57 +26,60 @@
           <div class="col-12">
 
             <div class="card">
-              {# <div class="card-header">
-                {% if action == 'create' %}
-						<h2 class="card-title">Nouvel client</h2>
-					{% endif %}
-					{% if action == 'edit' %}
-						<h2 class="card-title">Modifier client [{{ client.username }}]</h2>
-					{% endif %}
-              </div> #}
+             
    <div class="card-body">
   <div class="container" style="padding-top: 0;">
-
-  <h3>Formulaire d'ajout de commande</h3><br>
-
+<br>
     {{ form_start(form) }}
+
    
-    <div class="form-group">
-      {{ form_label(form.typeCom, 'Type commande') }}
-      {{ form_widget(form.typeCom, {'attr': {'class': 'form-control',
-      'placeholder':'Entrez le type de commande'
-      }}) }} 
-       </div>
-    
-   <div class="form-group">
-        {{ form_label(form.datRec, "Date recuperation ", {'label_attr': {'class': 'form-label'}}) }}
-        {{ form_widget(form.datRec, {'attr': {'class': 'form-control',
-      'placeholder':'Entrez la date de recuperation'
-      }}) }}        
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          {{ form_label(form.typeCom, 'Type commande') }}
+          {{ form_widget(form.typeCom, {'attr': {'class': 'form-control', 'placeholder':'Entrez le type de commande'}}) }}
+          {{ form_errors(form.typeCom) }}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          {{ form_label(form.datRec, "Date recuperation ", {'label_attr': {'class': 'form-label'}}) }}
+          {{ form_widget(form.datRec, {'attr': {'class': 'form-control', 'placeholder':'Entrez la date de recuperation'}}) }}
+          {{ form_errors(form.datRec) }}
+        </div>
+      </div>
     </div>
-    
-    <div class="form-group">
-      {{ form_label(form.montant, 'Montant (FCFA)') }}
-      {{ form_widget(form.montant, {'attr': {'class': 'form-control',
-      'placeholder':'Entrez le montant'
-      }}) }}
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          {{ form_label(form.montant, 'Montant (FCFA)') }}
+          {{ form_widget(form.montant, {'attr': {'class': 'form-control', 'placeholder':'Entrez le montant'}}) }}
+          {{ form_errors(form.montant) }}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          {{ form_label(form.avance, 'Avance (FCFA)') }}
+          {{ form_widget(form.avance, {'attr': {'class': 'form-control', 'placeholder':'Entrez l\'avance'}}) }}
+          {{ form_errors(form.avance) }}
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      {{ form_label(form.avance, 'Avance (FCFA)') }}
-      {{ form_widget(form.avance, {'attr': {'class': 'form-control',
-      'placeholder':'Entrez l\'avance'
-      }}) }}  
-    </div>
-  
-    <div class="form-group">
-      {{ form_label(form.filemod, 'Modele') }}
-      {{ form_widget(form.filemod, {'attr': {'class': 'form-control'
-      }}) }}  
-    </div>
-    <div class="form-group">
-      {{ form_label(form.filetissu, 'Tissu') }}
-      {{ form_widget(form.filetissu, {'attr': {'class': 'form-control'
-      }}) }}  
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          {{ form_label(form.filemod, 'Modele') }}
+          {{ form_widget(form.filemod, {'attr': {'class': 'form-control'}}) }}
+          {{ form_errors(form.filemod) }}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          {{ form_label(form.filetissu, 'Tissu') }}
+          {{ form_widget(form.filetissu, {'attr': {'class': 'form-control'}}) }}
+          {{ form_errors(form.filetissu) }}
+        </div>
+      </div>
     </div>
      
     <div class="form-group">

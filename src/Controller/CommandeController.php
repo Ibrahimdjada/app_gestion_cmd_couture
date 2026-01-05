@@ -28,14 +28,15 @@ class CommandeController extends BaseController
     private EntityManagerInterface $entityManager;
     private  $commandeRepository;
     private $userRepository;
-  
+    private $mesureRepository;
+
     public function __construct(EntityManagerInterface $entityManager,
-    CommandeRepository $commandeRepository, UserRepository $userRepository)
+        CommandeRepository $commandeRepository, UserRepository $userRepository, \App\Repository\MesureRepository $mesureRepository)
     {
         $this->entityManager = $entityManager;
         $this->commandeRepository = $commandeRepository;
         $this->userRepository = $userRepository;
-        
+        $this->mesureRepository = $mesureRepository;
     }
 
     #[Route('/commandes', name: 'list_commande')]
@@ -51,14 +52,29 @@ class CommandeController extends BaseController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }
-        $commandes = $this->entityManager->getRepository(Commande::class)->findAll();
-
+        // Filtrage selon le rôle
+        if ($role === Constantes::ROLE_TAILLEUR) {
+            // Toutes les commandes non démarrées + celles où il est affecté (usert)
+            $repo = $this->entityManager->getRepository(Commande::class);
+            $commandesNonDemarre = $repo->findBy(['statut' => 'Non démarré']);
+            $commandesPerso = $repo->findBy(['usert' => $users]);
+            // Fusionner sans doublons
+            $commandes = array_unique(array_merge($commandesNonDemarre, $commandesPerso), SORT_REGULAR);
+        } else {
+            $commandes = $this->entityManager->getRepository(Commande::class)->findAll();
+        }
+        $editForms = [];
+        foreach ($commandes as $commande) {
+            $editForms[$commande->getId()] = $this->createForm(CommandeEditType::class, $commande)->createView();
+        }
         return $this->render('commande/IndexCommande.html.twig', [
             'commandes' => $commandes,
+            'editForms' => $editForms,
+            'mesureRepository' => $this->mesureRepository,
         ]);
     }
 
@@ -74,11 +90,7 @@ class CommandeController extends BaseController
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            return $this->render('ErrorPage.html.twig');
-        }
+        
         // Créer un nouveau Commande vide
         
         $commande = new Commande();
@@ -120,17 +132,20 @@ class CommandeController extends BaseController
                 $asp = $ast;
                 $commande->setStatut($asp); // Setter pour le champ 'statut'
                
-                $filesMod= $form->get('filemod')->getData();
-                if ($filesMod){
+                 // ========= UPLOAD MODELES =========
+                $filesMod = $form->get('filemod')->getData();
+                if (!empty($filesMod)) {
                     $commande->setFilemod($filesMod);
                     $commande->uploadMod();
-                 }
+                }
 
-                 $filesTissu= $form->get('filetissu')->getData();
-                 if ($filesTissu){
+                // ========= UPLOAD TISSUS =========
+                $filesTissu = $form->get('filetissu')->getData();
+                if (!empty($filesTissu)) {
                     $commande->setFiletissu($filesTissu);
                     $commande->uploadTissu();
-                 }
+                }
+
 
                 // Enregistrer la commande dans la base de données
                 $this->entityManager->persist($commande);
@@ -170,11 +185,7 @@ class CommandeController extends BaseController
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            return $this->render('ErrorPage.html.twig');
-        }
+        
         // Créer un nouveau Commande vide
         $commande = new Commande();
         $dateJour = new \DateTime(); // Date courante
@@ -215,19 +226,22 @@ class CommandeController extends BaseController
                
                 $ast = ('Non démarré');
                     $asp = (0);
-                    $asp = $ast;
+                    $asp = $ast;   
                 $commande->setStatut($asp); // Setter pour le champ 'statut'
-                $filesMod= $form->get('filemod')->getData();
-                if ($filesMod){
-                    $commande->setFilemod($filesMod);
-                    $commande->uploadMod();
-                 }
 
-                 $filesTissu= $form->get('filetissu')->getData();
-                 if ($filesTissu){
-                    $commande->setFiletissu($filesTissu);
-                    $commande->uploadTissu();
-                 }
+                 // ========= UPLOAD MODELES =========
+                    $filesMod = $form->get('filemod')->getData();
+                    if (!empty($filesMod)) {
+                        $commande->setFilemod($filesMod);
+                        $commande->uploadMod();
+                    }
+
+                    // ========= UPLOAD TISSUS =========
+                    $filesTissu = $form->get('filetissu')->getData();
+                    if (!empty($filesTissu)) {
+                        $commande->setFiletissu($filesTissu);
+                        $commande->uploadTissu();
+                    }
                 // Enregistrer la commande dans la base de données
                 $this->entityManager->persist($commande);
                 // Créer un nouvel objet Rdv lié à la commande
@@ -269,11 +283,7 @@ class CommandeController extends BaseController
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            return $this->render('ErrorPage.html.twig');
-        }
+       
         // Trouver le RDV associé à la commande
         $rdv = $this->entityManager->getRepository(Rdv::class)->findOneBy(['commande' => $commande]);
 
@@ -337,165 +347,181 @@ class CommandeController extends BaseController
         ]);
     }
 
-    #[Route('/commande/{id}/delete', name: 'delete_commande')]
-
-    public function delete(Commande $commande): Response
+    #[Route('/commande/{id}/annuler', name: 'annuler_commande')]
+    public function annuler(Commande $commande, Request $request): Response
     {
         $users = $this->getUser();
-        
-        if (
-            !$users 
-        ) {
+        if (!$users) {
             return $this->redirectToRoute('app_login');
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-             $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
+        if ($role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER) {
             return $this->render('ErrorPage.html.twig');
         }
-        $this->entityManager->remove($commande);
-        $rdv = $this->entityManager->getRepository(Rdv::class)->findOneBy(['commande' => $commande]);
-        if ($rdv) {
-            
-            $this->entityManager->remove($rdv);
+        // Si paramètre restore=1, on restaure la commande
+        if ($request->query->get('restore')) {
+            $commande->setStatut('Non demarré');
+            $commande->setDeletedAt(null);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'La commande a été restaurée avec succès.');
+            return $this->redirectToRoute('liste_commandes_annulees');
         }
-       
+        // Sinon, on annule
+        $commande->setStatut('Annulée');
+        $commande->setDeletedAt(new \DateTime());
         $this->entityManager->flush();
-
-        // Ajouter un flash message de suppression réussie
-        $this->addFlash('success', 'Le commande a été supprimé avec succès.');
-
-        // Redirection vers la liste des Commandes après la suppression
+        $this->addFlash('success', 'La commande a été annulée avec succès.');
         return $this->redirectToRoute('list_commande');
     }
 
-    #[Route('/cmdrel/{id}', name: 'cmd_reliquat')]
-
-    public function cmdrel(Request $request, Commande $commande): Response
+    #[Route('/commandes/annulees', name: 'liste_commandes_annulees')]
+    public function listeCommandesAnnulees(): Response
     {
         $users = $this->getUser();
-        
-        if (
-            !$users 
-        ) {
+        if (!$users) {
             return $this->redirectToRoute('app_login');
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
+        if ($role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER) {
             return $this->render('ErrorPage.html.twig');
         }
-        // Créer un formulaire pour l'édition du client en utilisant EditType
-        $form = $this->createForm(EditCmdReliquat::class, $commande);
-
-        // Gérer la soumission du formulaire
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                $montant = $commande->getMontant(); // Supposons que ce soit le getter pour montant
-                $reliquat = $commande->getReliquat();
-                $reste = $commande->getReste();
-                if ($reliquat < 0 ) {
-                    throw new \Exception('ce champs doivent être positifs.');
-                }
-                if ($reliquat > $reste) {
-                    throw new \Exception('Le reliquat est trop grand et dépasse le reste à payer.');
-                }  
-                $rest = $commande->getReste() - $reliquat;
-
-                $commande->setReste($rest);
-                
-                $av = $commande->getAvance() + $reliquat;
-
-                $commande->setAvance($av);
-                // Enregistrer les modifications du client dans la base de données
-                $this->entityManager->persist($commande);
-                $this->entityManager->flush();
-
-                // Ajouter un flash message de succès
-                $this->addFlash('success', 'la reliquat a ete ajouter avec succès.');
-
-                // Rediriger vers la liste des clients après la modification
-                return $this->redirectToRoute('list_commande');
-            } catch (\Exception $e) {
-                // En cas d'erreur lors de la mise à jour
-                $this->addFlash('error', 'Une erreur est survenue lors de la mise à jour des informations du commande.');
-                // Vous pouvez ajouter un message spécifique à l'erreur si nécessaire
-                // $this->addFlash('error', 'Erreur : ' . $e->getMessage());
-            }
-        }
-
-        // Afficher le formulaire d'édition du client
-        return $this->render('commande/cmdReliquat-form-edit.html.twig', [
-            'form' => $form->createView(),
-            'commande' => $commande,
+        $commandes = $this->commandeRepository->findBy(['statut' => 'Annulée']);
+        return $this->render('commande/liste_commandes_annulees.html.twig', [
+            'commandes' => $commandes
         ]);
     }
+    #[Route('/commande/{id}/supprimer', name: 'supprimer_commande')]
+    public function supprimer(Commande $commande): Response
+    {
+        $users = $this->getUser();
+        if (!$users) {
+            return $this->redirectToRoute('app_login');
+        }
+        $roles = $users->getRoles();
+        $role = $roles[0];
+        if ($role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER) {
+            return $this->render('ErrorPage.html.twig');
+        }
+        // Supprimer tous les rdv liés à cette commande
+        $rdvs = $this->entityManager->getRepository(Rdv::class)->findBy(['commande' => $commande]);
+        foreach ($rdvs as $rdv) {
+            $this->entityManager->remove($rdv);
+        }
+        $this->entityManager->remove($commande);
+        $this->entityManager->flush();
+        $this->addFlash('success', 'La commande a été supprimée définitivement.');
+        return $this->redirectToRoute('liste_commandes_annulees');
+    }
+    #[Route('/cmdrel/{id}', name: 'cmd_reliquat')]
+    public function cmdrel(Request $request, Commande $commande): Response
+    {
+    $users = $this->getUser();
+    if (!$users) {
+    return $this->redirectToRoute('app_login');
+    }
+    $roles = $users->getRoles();
+    $role = $roles[0];
+    if (
+    $role !== Constantes::ROLE_TAILLEUR &&
+    $role !== Constantes::ROLE_ADMIN &&
+    $role !== Constantes::ROLE_SUPER
+    ) {
+    return $this->render('ErrorPage.html.twig');
+    }
 
-    
+    $form = $this->createForm(EditCmdReliquat::class, $commande);
+    $form->handleRequest($request);
 
-    
+    if ($form->isSubmitted() && $form->isValid()) {
+    try {
+        $reliquat = $commande->getReliquat();
+        $reste    = $commande->getReste();
+
+        if ($reliquat < 0) {
+            throw new \Exception('ce champs doivent être positifs.');
+        }
+        if ($reliquat > $reste) {
+            throw new \Exception('Le reliquat est trop grand et dépasse le reste à payer.');
+        }
+
+        $commande->setReste($reste - $reliquat);
+        $commande->setAvance($commande->getAvance() + $reliquat);
+
+        $this->entityManager->persist($commande);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Le reliquat a été ajouté avec succès.');
+
+        return $this->redirectToRoute('list_commande');
+    } catch (\Exception $e) {
+        $this->addFlash('error', 'Une erreur est survenue lors de la mise à jour des informations du commande.');
+    }
+    }
+
+    return $this->render('commande/cmdReliquat-form-edit.html.twig', [
+    'form' => $form->createView(),
+    'commande' => $commande,
+    ]);
+    }
+
+
     #[Route('/cmdtailleur/{id}', name: 'cmd_affectation', methods: ['GET', 'POST'])]
     public function commandeTailleur(Request $request, Commande $commande): Response
     {
         $users = $this->getUser();
-        
-        if (
-            !$users 
-        ) {
+        if (!$users) {
             return $this->redirectToRoute('app_login');
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-             $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            
+        // Si tailleur connecté, auto-affectation avec confirmation
+        if ($role === Constantes::ROLE_TAILLEUR) {
+            if ($request->isMethod('POST')) {
+                try {
+                    // Affecter le tailleur connecté à la commande
+                    $commande->setUsert($users);
+                    $commande->setStatut('Encours');
+                    // dd($commande);
+                    $this->entityManager->persist($commande);
+                    $this->entityManager->flush();
+                    $this->addFlash('success', 'Vous avez été affecté à la commande avec succès.');
+                    return $this->redirectToRoute('list_commande');
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Erreur lors de l\'affectation : ' . $e->getMessage());
+                }
+            }
+            // Afficher confirmation simple
+            return $this->render('commande/cmdtailleur-confirm.html.twig', [
+                'commande' => $commande
+            ]);
+        }
+        // Sinon, admin/super : formulaire classique
+        if ($role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER) {
             return $this->render('ErrorPage.html.twig');
         }
-        // Créer un formulaire pour l'édition du client en utilisant EditType
         $form = $this->createForm(EditCmdTailleur::class, $commande);
-
-        // Gérer la soumission du formulaire
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                
-                $ast = ('Encours');
-                $asp = (1);
-                $asp = $ast;
-                $commande->setStatut($asp);
-                $this->entityManager->persist($commande);
-         
-                // Enregistrer les modifications du client dans la base de données
+                $commande->setStatut('Encours');
                 $this->entityManager->persist($commande);
                 $this->entityManager->flush();
-                // Ajouter un flash message de succès
-                $this->addFlash('success', 'la tailleur a ete affecté avec succès.');
-
-                // Rediriger vers la liste des clients après la modification
+                $this->addFlash('success', 'Le tailleur a été affecté avec succès.');
                 return $this->redirectToRoute('list_commande');
             } catch (\Exception $e) {
-                // En cas d'erreur lors de la mise à jour
                 $this->addFlash('error', 'Une erreur est survenue lors de la mise à jour des informations du commande.');
-                // Vous pouvez ajouter un message spécifique à l'erreur si nécessaire
-                // $this->addFlash('error', 'Erreur : ' . $e->getMessage());
             }
         }
-        
-        // Afficher le formulaire d'édition du client
         return $this->render('commande/cmdtailleur-form-edit.html.twig', [
             'form' => $form->createView(),
             'commande' => $commande,
         ]);
     }
 
+
+    
     #[Route('/commande/{id}', name: 'commande_terminer')]
 
     public function commandeterminer(Request $request,EntityManagerInterface $entityManager,   commande $commande): Response
@@ -511,7 +537,7 @@ class CommandeController extends BaseController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }
@@ -543,7 +569,7 @@ class CommandeController extends BaseController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }
@@ -571,7 +597,7 @@ class CommandeController extends BaseController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role == Constantes::ROLE_TAILLEUR && $role == Constantes::ROLE_ADMIN && $role == Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }
@@ -598,7 +624,7 @@ class CommandeController extends BaseController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }
@@ -623,7 +649,7 @@ class CommandeController extends BaseController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }
@@ -648,7 +674,7 @@ class CommandeController extends BaseController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }
@@ -669,24 +695,15 @@ class CommandeController extends BaseController
     public function cmdaff(): Response
     {
         $users = $this->getUser();
-        
-        if (
-            !$users 
-        ) {
+        if (!$users) {
             return $this->redirectToRoute('app_login');
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-            $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            return $this->render('ErrorPage.html.twig');
-        }
-        $user = $this->getuser();
         $resultat = "";
         $classe = "";
-
-        $commande = $this->commandeRepository->findBy(array('statut' => 'Non demarré'));
+        // Admin/super/tailleur peuvent voir toutes les commandes non démarrées
+        $commande = $this->commandeRepository->findBy(['statut' => 'Non demarré']);
         return $this->render('commande/indexCmdAffNonDemarre.html.twig', [
             'commande' => $commande,
             'resultat' => $resultat,
@@ -698,24 +715,18 @@ class CommandeController extends BaseController
     public function cmdaff1(): Response
     {
         $users = $this->getUser();
-        
-        if (
-            !$users 
-        ) {
+        if (!$users) {
             return $this->redirectToRoute('app_login');
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-            $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            return $this->render('ErrorPage.html.twig');
-        }
-        $user = $this->getuser();
         $resultat = "";
         $classe = "";
-
-        $commande = $this->commandeRepository->findBy(array('statut' => 'Encours'));
+        if ($role === Constantes::ROLE_TAILLEUR) {
+            $commande = $this->commandeRepository->findBy(['statut' => 'Encours', 'usert' => $users]);
+        } else {
+            $commande = $this->commandeRepository->findBy(['statut' => 'Encours']);
+        }
         return $this->render('commande/indexCmdAffEncours.html.twig', [
             'commande' => $commande,
             'resultat' => $resultat,
@@ -727,24 +738,18 @@ class CommandeController extends BaseController
     public function cmdaff2(): Response
     {
         $users = $this->getUser();
-        
-        if (
-            !$users 
-        ) {
+        if (!$users) {
             return $this->redirectToRoute('app_login');
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-             $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            return $this->render('ErrorPage.html.twig');
-        }
-        $user = $this->getuser();
         $resultat = "";
         $classe = "";
-
-        $commande = $this->commandeRepository->findBy(array('statut' => 'Terminer'));
+        if ($role === Constantes::ROLE_TAILLEUR) {
+            $commande = $this->commandeRepository->findBy(['statut' => 'Terminer', 'usert' => $users]);
+        } else {
+            $commande = $this->commandeRepository->findBy(['statut' => 'Terminer']);
+        }
         return $this->render('commande/indexCmdAffTerminer.html.twig', [
             'commande' => $commande,
             'resultat' => $resultat,
@@ -756,24 +761,18 @@ class CommandeController extends BaseController
     public function cmdaff3(): Response
     {
         $users = $this->getUser();
-        
-        if (
-            !$users 
-        ) {
+        if (!$users) {
             return $this->redirectToRoute('app_login');
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-             $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            return $this->render('ErrorPage.html.twig');
-        }
-        $user = $this->getuser();
         $resultat = "";
         $classe = "";
-
-        $commande = $this->commandeRepository->findBy(array('statut' => 'Livrer'));
+        if ($role === Constantes::ROLE_TAILLEUR) {
+            $commande = $this->commandeRepository->findBy(['statut' => 'Livrer', 'usert' => $users]);
+        } else {
+            $commande = $this->commandeRepository->findBy(['statut' => 'Livrer']);
+        }
         return $this->render('commande/indexCmdAffLivrer.html.twig', [
             'commande' => $commande,
             'resultat' => $resultat,
@@ -796,7 +795,7 @@ class CommandeController extends BaseController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }
@@ -813,6 +812,14 @@ class CommandeController extends BaseController
             'commande' => $commande,
             'resultat' => $resultat,
             'classe' => $classe
+        ]);
+    }
+    #[Route('/mesure-client-table/{userId}', name: 'mesure_client_table')]
+    public function mesureClientTable($userId): Response
+    {
+        $mesures = $this->mesureRepository->findBy(['user' => $userId], ['id' => 'DESC']);
+        return $this->render('commande/_mesure_client_table.html.twig', [
+            'mesures' => $mesures
         ]);
     }
 }

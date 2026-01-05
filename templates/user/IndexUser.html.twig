@@ -18,7 +18,7 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               {# <li class="breadcrumb-item"><a href="#">Accueil</a></li> #}
-              {# <li class="breadcrumb-item active">Liste utilisateurs</li> #}
+              {# <li class="breadcrumb-item active">Liste users</li> #}
             </ol>
           </div>
         </div>
@@ -35,83 +35,119 @@
                 <h3 class="card-title">Tableau de liste des utilisateurs</h3>
 				          <div class="card-tools">
                   <div class="input-group input-group-sm">
-                   <a href="{{ path('ajout_user') }}" class="btn btn-success btn-sm ml-3">
+                   {# <a href="{{ path('ajout_user') }}" class="btn btn-success btn-sm ml-3">
 										<i class="fa fa-plus"></i>
-										Nouveau utilisateur
-									</a>
-					        </div></div>
+										Nouveau user
+									</a> #}
+                  <button class="btn btn-success" data-toggle="modal" data-target="#addUserModal">
+                    <i class="fa fa-plus"></i> Nouvel Utilisateur
+                </button>
+					        
+                  <button class="btn btn-secondary" data-toggle="modal" data-target="#trashModal" >
+                    <i class="fa fa-trash"></i> Corbeille
+                </button></div>
+                  </div>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
                 <table id="user" class="table table-bordered table-striped">
                   <thead>
                     <tr>
-                      <th>Id</th>
-                      <th>Login</th>
+                      
+                      <th>Username</th>
                       <th>Nom & Prénom</th>
                       <th>E-mail</th>
                       <th>Telephone</th>
+                      <th>Profile</th>
                       <th>Adresse</th>
                       <th>Actions</th>
-                       <th>Supprimer </th>
+                      
 							      </tr>
 				          </thead>
                   <tbody>
                   {% block alerts %}
-  {% for type, messages in app.session.flashBag.all %}
-    {% for message in messages %}
-        {%if type == 'error'%} {% set type = 'danger' %} {%endif%}
-        {%if type == 'message'%} {% set type = 'info' %} {%endif%}
-        <div class="alert alert-{{ type }} alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert">
-                <span aria-hidden="true">&times;</span>
-                <span class="sr-only">Close</span>
-            </button>
-            <p>{{ message|raw }}</p>
-        </div>
-    {% endfor %}
-  {% endfor %}
+                  {% for type, messages in app.session.flashBag.all %}
+                    {% for message in messages %}
+                        {%if type == 'error'%} {% set type = 'danger' %} {%endif%}
+                        {%if type == 'message'%} {% set type = 'info' %} {%endif%}
+                        <div class="alert alert-{{ type }} alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert">
+                                <span aria-hidden="true">&times;</span>
+                                <span class="sr-only">Close</span>
+                            </button>
+                            <p>{{ message|raw }}</p>
+                        </div>
+                    {% endfor %}
+                  {% endfor %}
                  {% endblock %}
                     {% for user in users %}
 								    <tr>
-                      <td>{{ user.id }}</td>
-                      <td>{{ user.username }}</td>
                       
+                      <td>{{ user.username }}</td>
                       <td>{{ user.firstName |capitaize_first}} {{ user.lastName |capitaize_first}}</td>
+                      
                       <td style="color:blue"><strong>{{ user.telephone }}</strong></td>
                     <td style="color:green"><strong>{{ user.email }}</strong></td>
+                      <td>
+                        {% if user.isClient %}
+                          Client
+                        {% elseif user.isTailleur %}
+                          Tailleur
+                        {% else %}
+                          Admin
+                        {% endif %}
+                      </td>
                     <td><strong>{{ user.adresse }}</strong></td>
                       
                          {# {%if is_granted(role_admin) %} #}
                        
-                      <td><a class="btn btn-info btn-sm" href="{{ path('edit_user', {id: user.id}) }}" onclick="return confirm('Etes-vous sûr de vouloir modifier cet utilisateur ?')">
-                              <i class="fa fa-edit"></i>
-                              <span class="sr-only">Editer</span>
-                          </a> 
-                          
-									      </td>
-                <td><a class="btn btn-danger btn-sm" href="#" onclick="return confirm('Etes-vous sûr de vouloir désactiver cet utilisateur ?')">
-                              <i class="fa fa-trash"></i>
-                              <span class="sr-only">Désactiver</span>
-                          </a> 
+                      <td><button class="btn btn-info btn-sm" data-toggle="modal" data-target="#editUserModal{{ user.id }}" >
+                                <i class="fa fa-edit"></i>
+                            </button>
+                       <form method="post" action="{{ path('desact_user', {id: user.id}) }}" style="display:inline-block;" onclick="return confirm('Voudriez vous desactiver cet utilisateur ?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                <button type="submit" class="btn btn-warning btn-sm"><i class="fa fa-ban"></i></button>
+                            </form>
                           
 									      </td>
                         {# {% endif %} #}
 								    </tr>
-						      	{% endfor %}
+						      	
+                   <!-- MODAL EDIT -->
+              <div class="modal fade" id="editUserModal{{ user.id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                      <h5 class="modal-title">Modifier {{ user.firstName }} {{ user.lastName }}</h5>
+                      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    {{ form_start(editForms[user.id], {'action': path('edit_user', {'id': user.id}), 'method':'POST'}) }}
+                    <div class="modal-body">
+                      <div class="row">
+                        <div class="col-md-6">{{ form_row(editForms[user.id].firstName) }}</div>
+                        <div class="col-md-6">{{ form_row(editForms[user.id].lastName) }}</div>
+                        <div class="col-md-6">{{ form_row(editForms[user.id].email) }}</div>
+                        <div class="col-md-6">
+                          {{ form_label(editForms[user.id].telephone) }}
+                          {{ form_widget(editForms[user.id].telephone) }}
+                          {{ form_errors(editForms[user.id].telephone) }}
+                        </div>
+
+                        <div class="col-md-6">{{ form_row(editForms[user.id].adresse) }}</div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Annuler</button>
+                      <button type="submit" class="btn btn-primary">Modifier</button>
+                    </div>
+                    {{ form_end(editForms[user.id]) }}
+                  </div>
+                </div>
+              </div>
+                {% endfor %}
+           
                   </tbody>
-                  <tfoot>
-                    <tr>
-                      <th>Id</th>
-                      <th>Login</th>
-                      <th>Nom & Prénom</th>
-                      <th>E-mail</th>
-                       <th>Telephone</th>
-                       <th>Adresse</th>
-                      <th>Actions</th>
-                       <th>Supprimer </th>
-                    </tr>
-                  </tfoot>
+                
                 </table>
               </div>
               <!-- /.card-body -->
@@ -128,7 +164,82 @@
     </section>
     <!-- /.content -->
 
-  {% endblock %}
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Ajouter un utilisateur</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      {{ form_start(form, {'action': path('ajout_user'), 'method':'POST'}) }}
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">{{ form_row(form.firstName) }}</div>
+          <div class="col-md-6">{{ form_row(form.lastName) }}</div>
+          <div class="col-md-6">{{ form_row(form.email) }}</div>
+          <div class="col-md-6">
+            {{ form_label(form.telephone) }}{{ form_widget(form.telephone) }}{{ form_errors(form.telephone) }}
+          </div>
+          <div class="col-md-6">{{ form_row(form.adresse) }}</div>
+          <div class="col-md-6">{{ form_row(form.role) }}</div>
+          <div class="col-md-12">{{ form_row(form.password) }}</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+      {{ form_end(form) }}
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Modal Corbeille Utilisateurs désactivés -->
+<div class="modal fade" id="trashModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Utilisateurs désactivés</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                {% if disabledUsers is not empty %}
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                           <tr>
+                                <th>Prénom</th>
+                                <th>Nom</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr> 
+                        </thead>
+                        <tbody>
+                            {% for user in disabledUsers %}
+                                <tr>
+                                    <td>{{ user.firstName }}</td>
+                                    <td>{{ user.lastName }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>
+                                        <form method="post" action="{{ path('activate_user', {id: user.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('activate' ~ user.id) }}">
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fa fa-check"></i> Activer
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>Aucun utilisateur désactivé.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 {% block autresFichiersJs %}
 <!-- jQuery -->
 <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
@@ -173,6 +284,114 @@ sLast: "Dernier"
     
   });
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        /* -----------------------------------
+          1️⃣ CONTRÔLE DU TÉLÉPHONE
+        ----------------------------------- */
+        const phoneInputs = document.querySelectorAll('input[name$="[telephone]"]');
+
+        phoneInputs.forEach(input => {
+            input.addEventListener('input', function() {
+
+                this.value = this.value.replace(/[^0-9]/g, '');
+
+                if (this.value.length > 8) {
+                    this.value = this.value.slice(0, 8);
+                }
+
+                if (this.value.length > 0 && !['7', '8', '9'].includes(this.value[0])) {
+                    this.setCustomValidity("Le numéro doit commencer par 7, 8 ou 9.");
+                } else if (this.value.length > 0 && this.value.length < 8) {
+                    this.setCustomValidity("Le numéro doit contenir 8 chiffres.");
+                } else {
+                    this.setCustomValidity("");
+                }
+            });
+
+            input.addEventListener("blur", function() {
+                const val = this.value.trim();
+                if (val !== "" && allPhones.includes(val)) {
+                    this.setCustomValidity("Ce numéro existe déjà !");
+                }
+            });
+        });
+
+
+
+        /* -----------------------------------
+          2️⃣ CONTRÔLE MOT DE PASSE (min 4)
+          ⚠ Fonctionne pour Ajout + Édition
+        ----------------------------------- */
+
+        const pwdInputs = document.querySelectorAll('input[name$="[password]"], input[name$="[plainPassword]"]');
+
+        pwdInputs.forEach(input => {
+
+            input.addEventListener("input", function() {
+
+                // Édition : password vide = OK car on ne change pas !
+                if (this.value.length === 0 && this.required === false) {
+                    this.setCustomValidity("");
+                    return;
+                }
+
+                if (this.value.length < 4) {
+                    this.setCustomValidity("Le mot de passe doit contenir au minimum 4 caractères.");
+                } else {
+                    this.setCustomValidity("");
+                }
+            });
+        });
+
+
+
+        /* -----------------------------------
+          3️⃣ EMAIL UNIQUE (sans AJAX)
+        ----------------------------------- */
+        const allEmails = [
+            {% for u in users %}
+                "{{ u.email|lower }}",
+            {% endfor %}
+            {% for u in disabledUsers %}
+                "{{ u.email|lower }}",
+            {% endfor %}
+        ];
+
+        const emailInputs = document.querySelectorAll('input[name$="[email]"]');
+
+        emailInputs.forEach(input => {
+            input.addEventListener("blur", function() {
+                const val = this.value.trim().toLowerCase();
+                if (val !== "" && allEmails.includes(val)) {
+                    this.setCustomValidity("Cet email existe déjà !");
+                }
+            });
+
+            input.addEventListener("input", function() {
+                this.setCustomValidity("");
+            });
+        });
+
+
+
+        /* -----------------------------------
+          4️⃣ TÉL UNIQUE (sans AJAX)
+        ----------------------------------- */
+        const allPhones = [
+            {% for u in users %}
+                "{{ u.telephone }}",
+            {% endfor %}
+            {% for u in disabledUsers %}
+                "{{ u.telephone }}",
+            {% endfor %}
+        ];
+
+    });
+</script>
+
+
   {% endblock %}
 
 

@@ -1,0 +1,33 @@
+<div class="modal-header">
+    <h5 class="modal-title">Corbeille utilisateurs</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Login</th>
+                <th>Nom & Prénom</th>
+                <th>Email</th>
+                <th>Telephone</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.firstName }} {{ user.lastName }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.telephone }}</td>
+                <td>
+                    <button class="btn btn-success btn-sm btnActivateUser" data-url="{{ path('activate_user', {id: user.id}) }}">
+                        <i class="fa fa-undo"></i> Activer
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

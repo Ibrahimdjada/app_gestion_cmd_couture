@@ -44,108 +44,99 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <table id="mesure" class="table table-bordered table-striped">
-                  <thead>
-                    <tr>
-            
-                    <tr style="font-weight: bold;">
-                      <th>Nom client</th>
-                      <th>Epaules</th>
-                      <th>Poitrines</th>
-                      <th>Manches</th>
-                      <th>Encolure</th>
-                      <th>Poigne</th>
-                      <th>Ecart dos</th>
-                      <th>Longueur</th>
-                      <th>Tour ventrale</th>
-                      <th>Cuisse</th>
-                      <th>Fermeture</th>
-                      <th>Ceinture</th>
-                      <th>Taille</th>
-                      <th>Longueur pantalon</th>
-                      <th>Bas pantalon</th>
-                      <th>Actions</th>
-                   
-							      </tr>
-				          </thead>
-                  <tbody>
-                  {% block alerts %}
-  {% for type, messages in app.session.flashBag.all %}
-    {% for message in messages %}
-        {%if type == 'error'%} {% set type = 'danger' %} {%endif%}
-        {%if type == 'message'%} {% set type = 'info' %} {%endif%}
-        <div class="alert alert-{{ type }} alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert">
-                <span aria-hidden="true">&times;</span>
-                <span class="sr-only">Close</span>
-            </button>
-            <p>{{ message|raw }}</p>
-        </div>
-    {% endfor %}
-  {% endfor %}
-                 {% endblock %}
-                    {% for mesure in mesures %}
-								    <tr>
-                      <td>{% if  mesure.user %}
-                      {{ mesure.user.firstName |capitaize_first}} {{ mesure.user.lastName |capitaize_first}}
-                      
-                      {% else %}
-                      
-                      {% endif %}
-                      </td>
-                      
-                      <td>{{ mesure.epaule }} cm</td>
-                      <td>{{ mesure.poitrine }} cm</td>
-                      <td>{{ mesure.manche }} cm</td>
-                       <td>{{ mesure.encolure }} cm</td>
-                      <td>{{ mesure.poignee }} cm</td>
-                      <td>{{ mesure.ecartDos }} cm</td>
-                       <td>{{ mesure.longueur }} cm</td>
-                      <td>{{ mesure.tourVentrale }} cm</td>
-                       <td>{{ mesure.cuisse }} cm</td>
-                      <td>{{ mesure.fermeture }} cm</td>
-                      <td>{{ mesure.ceinture }} cm</td>
-                      <td>{{ mesure.taille }} cm</td>
-                       <td>{{ mesure.longueurPantalon }} cm</td>
-                      <td>{{ mesure.basPantalon }} cm</td>
-                         {# {%if is_granted(role_admin) %} #}
-                       
-                      <td><a class="btn btn-info btn-sm" href="{{ path('edit_mesure', {'id': mesure.id}) }}" onclick="return confirm('Etes-vous sûr de vouloir modifier cette mesure ?')">
-                              <i class="fa fa-edit"></i>
-                              <span class="sr-only">Editer</span>
-                          </a> 
-                       <a class="btn btn-danger btn-sm" href="{{ path('delete_mesure', {'id': mesure.id}) }}" onclick="return confirm('Etes-vous sûr de vouloir supprimer cette mesure ?')">
-                              <i class="fa fa-trash"></i>
-                              <span class="sr-only">delete</span>
-                          </a> 
-									      </td>
-                        {# {% endif %} #}
-								    </tr>
-						      	{% endfor %}
-                  </tbody>
-                  <tfoot>
+                <div class="table-responsive">
+                <table id="mesure" class="table table-bordered table-striped table-sm">
+                 <thead>
+                  <tr style="font-weight: bold; text-align:center;">
                     
-                    <tr style="font-weight: bold;">
-                      <th>Nom client</th>
-                      <th>Epaules</th>
-                      <th>Poitrines</th>
-                      <th>Manches</th>
-                      <th>Encolure</th>
-                      <th>Poigne</th>
-                      <th>Ecart dos</th>
-                      <th>Longueur</th>
-                      <th>Tour ventrale</th>
-                      <th>Cuisse</th>
-                      <th>Fermeture</th>
-                      <th>Ceinture</th>
-                      <th>Taille</th>
-                      <th>Longueur pantalon</th>
-                      <th>Bas pantalon</th>
-                      <th>Actions</th>
-                  
-							      </tr>
-                  </tfoot>
+                    <th colspan="7">Mesures du haut</th>
+                    <th colspan="7">Mesures du bas</th>
+                  </tr>
+                  <tr style="font-weight: bold; text-align:center;">
+                    <!-- Haut -->
+                    <th>Clients</th>
+                    <th>Épaules</th>
+                    <th>Poitrine</th>
+                    <th>Manches</th>
+                    <th>Encolure</th>
+                    <th>Poignet</th>
+                    <th>Écart dos</th>
+                    <th>Longueur</th>
+
+                    <!-- Bas -->
+                    <th>Tour ventrale</th>
+                    <th>Cuisse</th>
+                    <th>Fermeture</th>
+                    <th>Ceinture</th>
+                    <th>Taille</th>
+                    <th>Longueur pantalon</th>
+                    <th>Bas pantalon</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+
+
+                  <tbody>
+                    {% block alerts %}
+                      {% for type, messages in app.session.flashBag.all %}
+                        {% for message in messages %}
+                          {% if type == 'error' %}{% set type = 'danger' %}{% endif %}
+                          {% if type == 'message' %}{% set type = 'info' %}{% endif %}
+                          <div class="alert alert-{{ type }} alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert">
+                              <span aria-hidden="true">&times;</span>
+                              <span class="sr-only">Close</span>
+                            </button>
+                            <p>{{ message|raw }}</p>
+                        {% endfor %}
+                      {% endfor %}
+                    {% endblock %}
+
+                    {% for mesure in mesures %}
+                      <tr>
+                        <td>
+                          {% if mesure.user %}
+                            {{ mesure.user.firstName|capitaize_first }} {{ mesure.user.lastName|capitaize_first }}
+                          {% endif %}
+                        </td>
+
+                        <td>{{ mesure.epaule }} cm</td>
+                        <td>{{ mesure.poitrine }} cm</td>
+                        <td>{{ mesure.manche }} cm</td>
+                        <td>{{ mesure.encolure }} cm</td>
+                        <td>{{ mesure.poignee }} cm</td>
+                        <td>{{ mesure.ecartDos }} cm</td>
+                        <td>{{ mesure.longueur }} cm</td>
+
+                        {# Mesures du bas #}
+                        <td>{{ mesure.tourVentrale }} cm</td>
+                        <td>{{ mesure.cuisse }} cm</td>
+                        <td>{{ mesure.fermeture }} cm</td>
+                        <td>{{ mesure.ceinture }} cm</td>
+                        <td>{{ mesure.taille }} cm</td>
+                        <td>{{ mesure.longueurPantalon }} cm</td>
+                        <td>{{ mesure.basPantalon }} cm</td>
+
+                        <td style="text-align: center;">
+                          <a class="btn btn-info btn-sm"
+                            href="{{ path('edit_mesure', {'id': mesure.id}) }}"
+                            onclick="return confirm('Etes-vous sûr de vouloir modifier cette mesure ?')">
+                            <i class="fa fa-edit"></i>
+                            <span class="sr-only">Editer</span>
+                          </a>
+                          <a class="btn btn-danger btn-sm"
+                            href="{{ path('delete_mesure', {'id': mesure.id}) }}"
+                            onclick="return confirm('Etes-vous sûr de vouloir supprimer cette mesure ?')">
+                            <i class="fa fa-trash"></i>
+                            <span class="sr-only">delete</span>
+                          </a>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+
                 </table>
+                </div>
               </div>
               <!-- /.card-body -->
             </div>
@@ -188,22 +179,30 @@
 <script>
   $(function () {
     $("#mesure").DataTable({
-      "responsive": true,"aaSorting": [[0, "desc"]],oLanguage: {
-sSearch: "Rechercher : ",
-sZeroRecords: "Aucune valeur trouvée",
-sInfo: "Afficher page _PAGE_ sur _PAGES_",
-sInfoFiltered: "(Filtres sur _MAX_ )",
-sInfoEmpty: "",
-oPaginate: {
-sFirst: "Premier",
-sPrevious: "Pr&eacute;c&eacute;dent",
-sNext: "Suivant",
-sLast: "Dernier"
-}
-}, "lengthChange": false, "autoWidth": false,
+      "responsive": { details: { type: 'inline' } },
+      "aaSorting": [[0, "desc"]],
+      "oLanguage": {
+        sSearch: "Rechercher : ",
+        sZeroRecords: "Aucune valeur trouvée",
+        sInfo: "Afficher page _PAGE_ sur _PAGES_",
+        sInfoFiltered: "(Filtres sur _MAX_ )",
+        sInfoEmpty: "",
+        oPaginate: {
+          sFirst: "Premier",
+          sPrevious: "Précédent",
+          sNext: "Suivant",
+          sLast: "Dernier"
+        }
+      },
+      "lengthChange": false,
+      "autoWidth": false,
+      "scrollX": true,
+      "columnDefs": [
+        { "responsivePriority": 1, "targets": [0, 15] },
+        { "responsivePriority": 2, "targets": [2, 11] }
+      ],
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#mesure_wrapper .col-md-6:eq(0)');
-    
   });
 </script>
   {% endblock %}

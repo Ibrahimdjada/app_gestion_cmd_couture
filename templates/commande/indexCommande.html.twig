@@ -1,4 +1,4 @@
-  {% extends 'layout_main.html.twig' %}
+{% extends 'layout_main.html.twig' %}
 {% block title %}Liste commandes
 	{% endblock %}
 {% block autresfichierscss %}
@@ -29,37 +29,56 @@
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title">Tableau de liste des commandes</h3>
-				          <div class="card-tools">
+                <div class="card-tools d-flex flex-row gap-2">
+                  <div class="input-group input-group-sm mr-2">
+                    <a href="{{ path('ajout_commande') }}" class="btn btn-success btn-sm ml-3">
+                      <i class="fa fa-plus"></i>
+                      Faire commande
+                    </a>
+                  </div>
+                  {% if not is_granted('ROLE_TAILLEUR') %}
                   <div class="input-group input-group-sm">
-                   <a href="{{ path('ajout_commande') }}" class="btn btn-success btn-sm ml-3">
-										<i class="fa fa-plus"></i>
-										Nouvelle commande
-									</a>
-					        </div></div>
+                    <a href="{{ path('liste_commandes_annulees') }}" class="btn btn-danger btn-sm ml-3">
+                      <i class="fa fa-ban"></i>
+                      Commandes annulées
+                    </a>
+                  </div>
+                  {% endif %}
+                </div>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <table id="commande" class="table table-bordered table-striped">
+                <div class="table-responsive">
+                <table id="commande" class="table table-bordered table-striped table-sm">
                   <thead>
                     <tr>
                      <th>N° commande</th>
                       <th>commande</th>
-                      <th>type commandes</th>
-                      <th>Date commandes</th>
-                      <th>Date recuperations</th>
+                      <th>Type</th>
+                      <th>Date commande</th>
+                      <th>Date recuperation</th>
+                       {% if not is_granted('ROLE_TAILLEUR') %}
                       <th>Montants</th>
                       <th>Avances</th>
+                      {% endif %}
                       <th>Restes</th>
+                      
                       <th>Statut</th>
-                      <th>Nom tailleurs</th>
+                      <th>Tailleurs</th>
                       <th>Modele</th>
                       <th>Tissus</th>
-                      <th>Payer le reste</th>
+                      
+                      <th>Payer reste</th>
                       <th>Affectation</th>
                       <th>Terminer</th>
                       <th>Recuperation</th>
+                      {% if not is_granted('ROLE_TAILLEUR') %}
                        <th>Reçu </th>
-                       <th>Action </th>
+                       {% endif %}
+                      <th>Mesure</th>
+                      
+                      <th>Action </th>
+                     
 							      </tr>
 				          </thead>
                   <tbody>
@@ -81,7 +100,7 @@
                   {% for commande in commandes %}
                     <tr>
                     <td><strong>C-00000{{ commande.id }}</strong></td>
-                     <td>{% if  commande.user %}
+                     <td class="ellipsis">{% if  commande.user %}
                       {{ commande.user.firstName |capitaize_first}} {{ commande.user.lastName |capitaize_first }}
                       
                       {% else %}
@@ -91,11 +110,13 @@
                       <td>{{ commande.typeCom }}</td>
                       <td>{{ commande.datCom |date('Y-m-d')}}</td>
                       <td><strong>{{ commande.datRec |date('Y-m-d')}}</strong></td>
+                      {% if not is_granted('ROLE_TAILLEUR') %}
                       <td style="color:blue"><strong>{{ commande.montant|number_format(0, '.', ' ') }} FCFA</strong></td>
                       <td><strong>{{ commande.avance|number_format(0, '.', ' ') }} FCFA</strong></td>
+                      {% endif %}
                       <td style="color:red"><strong>{{ commande.reste|number_format(0, '.', ' ') }} FCFA</strong></td>
                       <td style="color:green"><strong>{{ commande.statut }}</strong></td>
-                     <td>{% if  commande.usert %}
+                     <td class="ellipsis">{% if  commande.usert %}
                       {{ commande.usert.firstName |capitaize_first }} {{ commande.usert.lastName |capitaize_first}}
                       
                       {% else %}
@@ -103,117 +124,152 @@
                       {% endif %}
                       
                       </td>
-                          <td>
-                            {% if  commande.pathMod is not empty %}
-                            
-                              <div class="file-list">
-                                {% for path in commande.pathMod %}
-                                  <div  class="file-item">
-                                    <a class="btn-outline-success " style="color: black; margin-button: -10px" 
-                                    href="{{ asset(path) }}" onclick="return confirm('Voulez-vous voir le modèle ?')">
-                                      <p>Modéle {{loop.index}}</p>
-                                    </a>
-                                  </div>
-                                {% endfor %}
+                      <td class="ellipsis">
+                        {% if  commande.pathMod is not empty %}
+                        
+                          <div class="file-list">
+                            {% for path in commande.pathMod %}
+                              <div  class="file-item">
+                                <a class="btn-outline-success " style="color: black; margin-button: -10px" 
+                                href="{{ asset(path) }}" onclick="return confirm('Voulez-vous voir le modèle ?')">
+                                
+                                  <p>Modéle {{loop.index}}</p>
+                                </a>
                               </div>
-                            {% else %}
-                                <p>Pas de modéle</p>
-                            {% endif %}
-                          </td>
-                          <td>
-                            {% if  commande.pathTissu is not empty %}
-                              <div class="file-list"> 
-                                {% for path in commande.pathTissu %}
-                                  <div  class="file-item">
-                                    <a class=" btn-outline-success " style="color: black; margin-button: -10px" href="{{ asset(path) }}" onclick="return confirm('Voulez-vous voir le tissu ?')">
-                                        <p>Tissu {{loop.index}}</p>
-                                    </a>
-                                  </div>
-                                {% endfor %}
+                            {% endfor %}
+                          </div>
+                        {% else %}
+                            <p>Pas de modéle</p>
+                        {% endif %}
+                      </td>
+                      <td class="ellipsis">
+                        {% if  commande.pathTissu is not empty %}
+                          <div class="file-list"> 
+                            {% for path in commande.pathTissu %}
+                              <div  class="file-item">
+                                <a class=" btn-outline-success " style="color: black; margin-button: -10px" href="{{ asset(path) }}" onclick="return confirm('Voulez-vous voir le tissu ?')">
+                                    <p>Tissu {{loop.index}}</p>
+                                </a>
                               </div>
-                            {% else %}
-                              <p>Pas de tissu</p>
-                            {% endif %}
-                          </td>
-                        <td> {% if  commande.reste > 0 %}
-                          <a class="btn btn-sm btn-outline-success"style="color: blue; border-color: blue;"  href={{ path('cmd_reliquat', {id: commande.id}) }} onclick="return confirm('reglement du reste à payer ?')">
-                                <i class="bi-check"></i>
-                                <span class="sr-only">Reliquat</span>
-                            </a> 
-                            {% endif %}
-                             </td>
-                             <td>
-                            {% if commande.usert is null %}
+                            {% endfor %}
+                          </div>
+                        {% else %}
+                          <p>Pas de tissu</p>
+                        {% endif %}
+                      </td>
+                      <td>
+                          {% if commande.reste > 0 %}
                               <button type="button"
                                       class="btn btn-sm btn-outline-success open-modal"
                                       style="color: blue; border-color: blue;"
                                       data-toggle="modal"
-                                      data-target="#tailleurModal"
-                                      data-url="{{ path('cmd_affectation', {id: commande.id}) }}">
-                                  <i class="bi-check"></i>
-                                  <span class="sr-only">Affectation</span>
+                                      data-target="#modalReliquat"
+                                      data-url="{{ path('cmd_reliquat', {id: commande.id}) }}">
+                                  <i class="bi bi-cash-coin"></i>
+                                  <span class="sr-only">reliquat</span>
                               </button>
-                            {% endif %}
-                          </td>
-                             <td>{% if  commande.statut == 'Encours' %}
-                      <a class="btn btn-sm btn-outline-success"style="color: blue; border-color: blue;"  href="{{ path('commande_terminer', {id: commande.id}) }}" onclick="return confirm('Avez vous finaliser la commande ?')">
-                              <i class="bi-check"></i>
-                              <span class="sr-only">Terminer</span>
-                          </a>   
-                            {% endif %}
-                              </td>
-                               <td>{% if  commande.statut == 'Terminer' %}
-                      <a  href="{{ path('commande_recuperer', {id: commande.id}) }}" class="btn btn-sm btn-outline-success"style="color: blue; border-color: blue;" onclick="return confirm('voulez vous confirmer la recuperation ?')">
-                              <i class="bi-check"></i>
-                              <span class="sr-only">Reception</span>
-                          </a>    
-                          {% endif %} 
-                              </td> 
-                            <td> 
-                            <a class="btn btn-sm btn-outline-success"style="color: blue; border-color: blue;" href="{{ path('faire_recu', {id: commande.id}) }}" onclick="return confirm('Voulez-vous effectuer le recu pour cette commande ?')">
-                                  <i class="bi bi-print">Réçu</i>
-                                  <span class="sr-only">Réçu</span>
-                              </a> 
-                            </td>       
-                         {# {%if is_granted(role_admin) %} #}
-                       
-                      <td><a class="btn btn-info btn-sm" href="{{ path('edit_commande', {id: commande.id}) }}" onclick="return confirm('Etes-vous sûr de vouloir modifier cet commande ?')">
-                              <i class="fa fa-edit"></i>
-                              <span class="sr-only">Editer</span>
-                          </a> 
-									      <a class="btn btn-danger btn-sm" href="{{ path('delete_commande', {'id': commande.id}) }}" onclick="return confirm('Etes-vous sûr de vouloir supprimé ce rendez-vous ?')">
-                              <i class="fa fa-trash"></i>
-                              <span class="sr-only">delete</span>
-                          </a> 
-                          
-									      </td>
+                          {% endif %}
+                      </td>
+                      <td>
+                        {% if commande.usert is null %}
+                          <button type="button"
+                                  class="btn btn-sm btn-outline-success open-modal"
+                                  style="color: blue; border-color: blue;"
+                                  data-toggle="modal"
+                                  data-target="#tailleurModal"
+                                  data-url="{{ path('cmd_affectation', {id: commande.id}) }}">
+                              <i class="bi bi-person-plus"></i>
+                              <span class="sr-only">Affectation</span>
+                          </button>
+                        {% endif %}
+                      </td>
+                      <td>{% if  commande.statut == 'Encours' %}
+                          <a class="btn btn-sm btn-outline-success"style="color: blue; border-color: blue;"  href="{{ path('commande_terminer', {id: commande.id}) }}" onclick="return confirm('Avez vous finaliser la commande ?')">
+                          <i class="bi-check"></i>
+                          <span class="sr-only">Terminer</span>
+                        </a>   
+                        {% endif %}
+                      </td>
+                      <td>{% if  commande.statut == 'Terminer' %}
+                        <a  href="{{ path('commande_recuperer', {id: commande.id}) }}" class="btn btn-sm btn-outline-success"style="color: blue; border-color: blue;" onclick="return confirm('voulez vous confirmer la recuperation ?')">
+                          <i class="bi-check"></i>
+                          <span class="sr-only">Reception</span>
+                        </a>    
+                      {% endif %} 
+                      </td> 
+                      {% if not is_granted('ROLE_TAILLEUR') %}
+                      <td>
+
+                      <a class="btn btn-sm btn-outline-success"style="color: blue; border-color: blue;" href="{{ path('faire_recu', {id: commande.id}) }}" onclick="return confirm('Voulez-vous effectuer le recu pour cette commande ?')">
+                            <i class="bi bi-print">Réçu</i>
+                            <span class="sr-only">Réçu</span>
+                        </a> 
+                      </td>  
+                      {% endif %}     
+                      {# {%if is_granted(role_admin) %} #}
+                    <td>
+                    <button class="btn btn-primary btn-sm" onclick="showMesureTable({{ commande.user.id }})">
+                      <i class="fa fa-ruler"></i> Afficher
+                    </button>
+                  </td>
+                  <td>
+                    <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#editCommandeModal{{ commande.id }}" >
+                      <i class="fa fa-edit"></i>
+                    </button>
+                    {% if not is_granted('ROLE_TAILLEUR') %}
+                    <a class="btn btn-warning btn-sm" href="{{ path('annuler_commande', {'id': commande.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir annuler cette commande ?')">
+                      <i class="fa fa-ban"></i>
+                      <span class="sr-only">annuler</span>
+                    </a>
+                    {% endif %}
+                  </td>
+                      
                         {# {% endif %} #}
 								    </tr>
-						      	{% endfor %}
+                    <div class="modal fade" id="editCommandeModal{{ commande.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                      <h5 class="modal-title">Modifier {{ commande.user.firstName }} {{ commande.user.lastName }}</h5>
+                      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    {{ form_start(editForms[commande.id], {'action': path('edit_commande', {'id': commande.id}), 'method':'POST'}) }}
+                    <div class="modal-body">
+                      <div class="row">
+                        <div class="col-md-6">{{ form_row(editForms[commande.id].typeCom) }}</div>
+                        <div class="col-md-6">{{ form_row(editForms[commande.id].datRec) }}</div>
+                        <div class="col-md-6">{{ form_row(editForms[commande.id].montant) }}</div>
+                        
+                        <div class="col-md-6">{{ form_row(editForms[commande.id].avance) }}</div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Annuler</button>
+                      <button type="submit" class="btn btn-primary">Modifier</button>
+                    </div>
+                    {{ form_end(editForms[commande.id]) }}
+                  </div>
+                </div>
+              </div>
+                    {% endfor %}
+                    <div id="mesureTableContainer" style="display:none; margin-top:30px;"></div>
+                    <script>
+                    function showMesureTable(userId) {
+                      // Masquer le tableau précédent
+                      document.getElementById('mesureTableContainer').style.display = 'none';
+                      // Requête AJAX pour récupérer le HTML du tableau
+                      fetch('/mesure-client-table/' + userId)
+                        .then(response => response.text())
+                        .then(html => {
+                          document.getElementById('mesureTableContainer').innerHTML = html;
+                          document.getElementById('mesureTableContainer').style.display = 'block';
+                        });
+                    }
+                    </script>
                   </tbody>
-                  <tfoot>
-                    <tr>
-                     <th>N° commande</th>
-                      <th>commande</th>
-                      <th>type commandes</th>
-                      <th>Date commandes</th>
-                      <th>Date recuperations</th>
-                      <th>Montants</th>
-                      <th>Avances</th>
-                      <th>Restes</th>
-                      <th>Statut</th>
-                      <th>Nom tailleurs</th>
-                      <th>Modele</th>
-                      <th>Tissus</th>
-                      <th>Payer le reste</th>
-                      <th>Affectation</th>
-                      <th>Terminer</th>
-                      <th>Recuperation</th>
-                       <th>Reçu </th>
-                       <th>Action </th>
-                    </tr>
-                  </tfoot>
+                
                 </table>
+                </div>
               </div>
               <!-- /.card-body -->
             </div>
@@ -250,62 +306,130 @@
   </div>
 </div>
 
+
+{# Modal (en bas de la page, en dehors du tableau) #}
+<div class="modal fade" id="modalReliquat" tabindex="-1" role="dialog" aria-labelledby="modalReliquatLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalReliquatLabel">Paiement du reliquat</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body" id="modalReliquatBody">
+        {# Contenu chargé en AJAX #}
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Chargement...</span>
+            </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
   {% endblock %}
 {% block autresFichiersJs %}
-<!-- jQuery -->
-<script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
-<!-- Bootstrap 4 -->
-<script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-<!-- DataTables  & Plugins -->
-<script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('plugins/jszip/jszip.min.js') }}"></script>
-<script src="{{ asset('plugins/pdfmake/pdfmake.min.js') }}"></script>
-<script src="{{ asset('plugins/pdfmake/vfs_fonts.js') }}"></script>
-<script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
-<!-- AdminLTE App -->
-<script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="{{ asset('dist/js/demo.js') }}"></script>
-<!-- Page specific script -->
-<script>
-  $(function () {
-    $("#commande").DataTable({
-      "responsive": true,"aaSorting": [[0, "desc"]],oLanguage: {
-sSearch: "Rechercher : ",
-sZeroRecords: "Aucune valeur trouvée",
-sInfo: "Afficher page _PAGE_ sur _PAGES_",
-sInfoFiltered: "(Filtres sur _MAX_ )",
-sInfoEmpty: "",
-oPaginate: {
-sFirst: "Premier",
-sPrevious: "Pr&eacute;c&eacute;dent",
-sNext: "Suivant",
-sLast: "Dernier"
-}
-}, "lengthChange": false, "autoWidth": false,
-      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-    }).buttons().container().appendTo('#commande_wrapper .col-md-6:eq(0)');
-    
-  });
-</script>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $('.open-modal').click(function () {
-            let url = $(this).data('url');
+  <!-- jQuery -->
+  <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
+  <!-- Bootstrap 4 -->
+  <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <!-- DataTables  & Plugins -->
+  <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+  <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+  <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+  <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+  <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+  <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+  <script src="{{ asset('plugins/jszip/jszip.min.js') }}"></script>
+  <script src="{{ asset('plugins/pdfmake/pdfmake.min.js') }}"></script>
+  <script src="{{ asset('plugins/pdfmake/vfs_fonts.js') }}"></script>
+  <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+  <script src="{{ asset('plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+  <script src="{{ asset('plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+  <!-- AdminLTE App -->
+  <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
+  <!-- AdminLTE for demo purposes -->
+  <script src="{{ asset('dist/js/demo.js') }}"></script>
+  <!-- Page specific script -->
+  <script>
+      $("#commande").DataTable({
+      "responsive": { details: { type: 'inline' } },
+    "aaSorting": [[0, "desc"]],
+    "oLanguage": {
+        sSearch: "Rechercher : ",
+        sZeroRecords: "Aucune valeur trouvée",
+        sInfo: "Afficher page _PAGE_ sur _PAGES_",
+        sInfoFiltered: "(Filtres sur _MAX_ )",
+        sInfoEmpty: "",
+        oPaginate: {
+            sFirst: "Premier",
+            sPrevious: "Précédent",
+            sNext: "Suivant",
+            sLast: "Dernier"
+        }
+    },
+    "lengthChange": false,
+    "autoWidth": false,
+    "scrollX": true,
+    "columnDefs": [
+      { "responsivePriority": 1, "targets": [1, 17] },
+      { "responsivePriority": 2, "targets": [5, 8] },
+      { "responsivePriority": 3, "targets": [9] },
+      { "responsivePriority": 4, "targets": [10] },
+      { "responsivePriority": 5, "targets": [11] }
+    ],
+    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+}).buttons().container().appendTo('#commande_wrapper .col-md-6:eq(0)');
 
-            // Charger le contenu du formulaire dans la modale
-            $('#modal-body-content').load(url);
+  </script>
+    <script>
+      $(document).ready(function () {
+        $('.open-modal').click(function () {
+          let url = $(this).data('url');
+
+          // Charger le contenu du formulaire dans la modale
+          $('#modal-body-content').load(url);
         });
+      });
+    </script>
+  <script>
+    // Handler pour le bouton modal d'affectation tailleur
+    $(document).on('click', 'button[data-target="#tailleurModal"]', function (e) {
+      e.preventDefault();
+      var url = $(this).data('url');
+      var body = $('#modal-body-content');
+      // Spinner pendant le chargement
+      body.html('<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Chargement...</span></div></div>');
+      // Requête AJAX pour charger le formulaire
+      $.get(url, function (data) {
+        body.html(data);
+      }).fail(function () {
+        body.html('<div class="alert alert-danger">Erreur lors du chargement du formulaire.</div>');
+      });
     });
-</script>
+
+    // Handler pour le bouton modal reliquat
+    $(document).on('click', 'button[data-target="#modalReliquat"]', function (e) {
+      e.preventDefault();
+      var url = $(this).data('url');
+      var body = $('#modalReliquatBody');
+      // Spinner pendant le chargement
+      body.html('<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Chargement...</span></div></div>');
+      // Requête AJAX pour charger le formulaire
+      $.get(url, function (data) {
+        body.html(data);
+      }).fail(function () {
+        body.html('<div class="alert alert-danger">Erreur lors du chargement du formulaire.</div>');
+      });
+    });
+  </script>
+
 
   {% endblock %}
 

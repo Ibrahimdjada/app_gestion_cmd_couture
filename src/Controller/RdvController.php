@@ -35,7 +35,7 @@ class RdvController extends AbstractController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }
@@ -59,7 +59,7 @@ class RdvController extends AbstractController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }

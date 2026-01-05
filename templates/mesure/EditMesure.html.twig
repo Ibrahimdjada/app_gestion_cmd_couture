@@ -13,9 +13,7 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              {# <li class="breadcrumb-item"><a href="#">Accueil</a></li>
-              <li class="breadcrumb-item active">Modification  mesure</li> #}
-            </ol>
+             </ol>
           </div>
         </div>
       </div><!-- /.container-fluid -->
@@ -28,12 +26,7 @@
 
             <div class="card">
               <div class="card-header">
-                {# {% if action == 'create' %}
-						<h2 class="card-title">Nouvelle structure</h2>
-					{% endif %} #}
-					{# {% if action == 'edit' %}
-						<h2 class="card-title">Modifier l'mesure [{{ mesure.username }}]</h2>
-					{% endif %} #}
+                
               </div>
 
 
@@ -41,6 +34,18 @@
     </div>
 </nav>
 <div class="container form-section">
+{% for type, messages in app.session.flashBag.all %}
+      {% for message in messages %}
+        {% if type == 'error' %}{% set type = 'danger' %}{% endif %}
+        {% if type == 'success' %}{% set type = 'success' %}{% endif %}
+        <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    {% endfor %}
     <div class="row">
         <div class="col-md-8">
             
@@ -185,5 +190,58 @@
       event.preventDefault(); // Annule la soumission du formulaire
     }
   });
+</script>
+{% endblock %}
+{% block autresFichiersJs %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const inputs = document.querySelectorAll(
+        'input[name*="epaule"], input[name*="poitrine"], input[name*="manche"], input[name*="encolure"], ' +
+        'input[name*="poignee"], input[name*="ecartDos"], input[name*="tourVentrale"], input[name*="longueur"], ' +
+        'input[name*="ceinture"], input[name*="taille"], input[name*="fermeture"], input[name*="cuisse"], ' +
+        'input[name*="longueurPantalon"], input[name*="basPantalon"]'
+    );
+
+    inputs.forEach(function(input) {
+
+        // ✅ Clavier numérique mobile
+        input.setAttribute("inputmode", "decimal");
+        input.setAttribute("pattern", "[0-9]+(\\.[0-9]{1,2})?");
+        input.setAttribute("placeholder", "Max: 9.99");
+
+        input.addEventListener("input", function () {
+
+            // ✅ Supprime tout sauf chiffres et point
+            this.value = this.value.replace(/[^0-9.]/g, '');
+
+            // ✅ Empêche plusieurs points
+            if ((this.value.match(/\./g) || []).length > 1) {
+                this.value = this.value.slice(0, -1);
+            }
+
+            // ✅ Conversion en nombre
+            let valeur = parseFloat(this.value);
+
+            // ✅ Limite max = 9.99
+            if (valeur > 9.99) {
+                this.value = "9.99";
+                this.style.border = "2px solid red";
+
+                // ✅ Alerte utilisateur
+                if (!this.dataset.alerted) {
+                    alert("⛔ La valeur ne doit pas dépasser 9.99");
+                    this.dataset.alerted = "true";
+                }
+            } else {
+                this.style.border = "1px solid #ced4da";
+                this.dataset.alerted = "";
+            }
+
+        });
+
+    });
+
+});
 </script>
 {% endblock %}

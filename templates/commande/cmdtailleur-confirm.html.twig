@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmation d'affectation{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>Confirmer l'affectation</h2>
+    <div class="alert alert-info">
+        Voulez-vous vous affecter à la commande n°{{ commande.id }} ?
+    </div>
+    <form method="post" action="{{ path('cmd_affectation', {'id': commande.id}) }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('affecter_tailleurr_' ~ commande.id) }}">
+        <button type="submit" class="btn btn-success">Oui, m'affecter</button>
+        <a href="{{ path('list_commande') }}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

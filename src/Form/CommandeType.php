@@ -33,23 +33,6 @@ class CommandeType extends AbstractType
                     ->setParameter('isClient', true);
             }
         ))
-        
-        //  array(
-        //     'class' => 'App\Entity\User',
-        //     'choice_label' => function ($user) {
-        //         return $user->getFirstName() . ' ' . $user->getLastName();
-        //     },
-        //     'required' => true,
-        //     'multiple' => false,
-        //     'placeholder' => "Sélectionnez le client",
-        //     'query_builder' => function (UserRepository $repository) {
-        //         // Filtrer les utilisateurs avec isClient = true
-        //         return $repository->createQueryBuilder('u')
-        //             ->where('u.isClient = :isClient')
-        //             ->setParameter('isClient', true);
-        //     }
-
-        // ))
             ->add('typeCom')
             ->add('datRec')
             ->add('montant')

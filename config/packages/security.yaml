@@ -39,7 +39,7 @@ security:
     access_control:
         
          - { path: ^/super, roles: ROLE_SUPER }
-         - { path: ^/user, roles: ROLE_USER }
+         - { path: ^/Admin, roles: ROLE_ADMIN }
          - { path: ^/tailleur, roles: ROLE_TAILLEUR }
          - { path: ^/client, roles: ROLE_CLIENT }
          - { path: ^/accueil, roles: IS_AUTHENTICATED_FULLY }

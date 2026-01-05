@@ -27,24 +27,40 @@ class HomeController extends BaseController
     public function index(UserRepository $userRepository, EntityManagerInterface $entityManager): Response
     {
 
-        // if (
-        //     !$this->isGranted('IS_AUTHENTICATED_FULLY')
-        // ) {
-        //     return $this->redirectToRoute('app_login');
-        // }
+        $users = $this->getUser();
+        
+        if (
+            !$users 
+        ) {
+            return $this->redirectToRoute('app_login');
+        }
             $mois = date('m').'-01';
-            $debut =$mois;
+            $debut = $mois;
             $fin = date('m-d');
-            $result = $this->commandeRepository-> getCommandeMois('Non demarré',$debut,$fin);
-                $nombre = intval($result[0]['nombre']);
-                $result1 = $this->commandeRepository-> getCommandeMois('Encours',$debut,$fin);
-                $nombre1 = intval($result1[0]['nombre']);
-                $result2 = $this->commandeRepository-> getCommandeMois('Terminer',$debut,$fin);
-                $nombre2 = intval($result2[0]['nombre']);
-                $result3 = $this->commandeRepository-> getCommandeMois('Livrer',$debut,$fin);
-                $nombre3 = intval($result3[0]['nombre']);
+            $user = $this->getUser();
+            $roles = $user ? $user->getRoles() : [];
+            $isTailleur = in_array('ROLE_TAILLEUR', $roles);
+
+            if ($isTailleur) {
+                $userId = $user->getId();
+                // Afficher le total des commandes Non démarré (tous)
+                $nombre = intval($this->commandeRepository->getCommandeMois('Non demarré', $debut, $fin)[0]['nombre'] ?? 0);
+                // Les autres statuts sont filtrés par tailleur
+                $nombre1 = intval($this->commandeRepository->getCommandeMoisTailleur('Encours', $debut, $fin, $userId)[0]['nombre'] ?? 0);
+                $nombre2 = intval($this->commandeRepository->getCommandeMoisTailleur('Terminer', $debut, $fin, $userId)[0]['nombre'] ?? 0);
+                $nombre3 = intval($this->commandeRepository->getCommandeMoisTailleur('Livrer', $debut, $fin, $userId)[0]['nombre'] ?? 0);
+            } else {
+                $nombre = intval($this->commandeRepository->getCommandeMois('Non demarré', $debut, $fin)[0]['nombre'] ?? 0);
+                $nombre1 = intval($this->commandeRepository->getCommandeMois('Encours', $debut, $fin)[0]['nombre'] ?? 0);
+                $nombre2 = intval($this->commandeRepository->getCommandeMois('Terminer', $debut, $fin)[0]['nombre'] ?? 0);
+                $nombre3 = intval($this->commandeRepository->getCommandeMois('Livrer', $debut, $fin)[0]['nombre'] ?? 0);
+            }
             return $this->render('dashboard.html.twig', [
-                'controller_name' => 'HomeController','response' => $nombre,'result1'=>$nombre1,'result2'=>$nombre2,'result3'=>$nombre3
+                'controller_name' => 'HomeController',
+                'response' => $nombre,
+                'result1' => $nombre1,
+                'result2' => $nombre2,
+                'result3' => $nombre3
             ]);
    
     }

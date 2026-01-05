@@ -9,6 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class UserType extends AbstractType
 {
@@ -31,8 +32,18 @@ class UserType extends AbstractType
             'label' => 'Telephone',
             'attr' => ['class' => 'form-control']
         ])
+        
         ->add('adresse', TextType::class, [
             'label' => 'Address',
+            'attr' => ['class' => 'form-control']
+        ])
+        ->add('role', ChoiceType::class, [
+            'label' => 'Profile',
+            'choices'  => [
+                'Client' => 'ROLE_CLIENT',
+                'Tailleur' => 'ROLE_TAILLEUR',
+            ],
+            'mapped' => false,
             'attr' => ['class' => 'form-control']
         ])
         ->add('password', RepeatedType::class, [
@@ -41,8 +52,9 @@ class UserType extends AbstractType
             'required' => true,
             'first_options'  => ['label' => 'Password', 'attr' => ['class' => 'form-control']],
             'second_options' => ['label' => 'Confirm Password', 'attr' => ['class' => 'form-control']],
-        ])
-;    
+        ]);  
+        
+        
     }
 
     public function configureOptions(OptionsResolver $resolver)

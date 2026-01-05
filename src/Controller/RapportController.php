@@ -31,8 +31,9 @@ class RapportController extends AbstractController
     public function rapPeriode(Request $request): Response
     {
         
-        $user = $this->getUser();
-        $roles = $user->getRoles();
+        $users = $this->getUser();
+   
+        $roles = $users->getRoles();
         $role = $roles[0];
         $resultat = "";
         $classe = "";
@@ -41,7 +42,7 @@ class RapportController extends AbstractController
         $datFin = "";
         $form = $this->createForm(RapporttailType::class);
         if (
-            $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }
@@ -73,10 +74,10 @@ class RapportController extends AbstractController
     #[Route('/concepteur', name: 'rap_conc')]
     public function rapconc(Request $request): Response
     {
-        $user = $this->getUser();
+        $users = $this->getUser();
         $resultat = "";
         $classe = "";
-        $roles = $user->getRoles();
+        $roles = $users->getRoles();
         $role = $roles[0];
         $dateJour = date('Y-m-d');
         $datDebut = "";
@@ -86,7 +87,7 @@ class RapportController extends AbstractController
 
         $form = $this->createForm(RapportconcType::class);
         if (
-            $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
 
@@ -118,10 +119,10 @@ class RapportController extends AbstractController
     #[Route('/statut', name: 'rap_statut')]
     public function rapStatut(Request $request): Response
     {
-        $user = $this->getUser();
+        $users = $this->getUser();
         $resultat = "";
         $classe = "";
-        $roles = $user->getRoles();
+        $roles = $users->getRoles();
         $role = $roles[0];
         $dateJour = date('Y-m-d');
         $datDebut = "";
@@ -131,7 +132,7 @@ class RapportController extends AbstractController
 
         $form = $this->createForm(RapportType::class);
         if (
-            $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }

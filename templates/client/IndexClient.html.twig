@@ -35,10 +35,9 @@
                 <h3 class="card-title">Tableau de liste des clients</h3>
 				          <div class="card-tools">
                   <div class="input-group input-group-sm">
-                   <a href="{{ path('ajout_client') }}" class="btn btn-success btn-sm ml-3">
-										<i class="fa fa-plus"></i>
-										Nouveau client
-									</a>
+                   <button class="btn btn-success" data-toggle="modal" data-target="#addClientModal">
+                    <i class="fa fa-plus"></i> Nouveau client
+                </button>
                   <a href="{{ path('ajoutMod_client') }}" class="btn btn-success btn-sm ml-3">
 										<i class="fa fa-plus"></i>
 										Ajouter client/modéle
@@ -50,13 +49,13 @@
                 <table id="client" class="table table-bordered table-striped">
                   <thead>
                     <tr>
-                      <th>Id</th>
+                      <th>Username</th>
                       <th>Nom & Prénom</th>
                       <th>E-mail</th>
                       <th>Telephone</th>
                       <th>Adresse</th>
                       <th>Actions</th>
-                       <th>Supprimer </th>
+                       
 							      </tr>
 				          </thead>
                   <tbody>
@@ -77,8 +76,7 @@
                  {% endblock %}
                     {% for client in clients %}
 								    <tr>
-                      <td>{{ client.id }}</td>
-                      
+                      <td>{{ client.username }}</td>
                       <td>{{ client.firstName |capitaize_first}} {{ client.lastName |capitaize_first}}</td>
                       <td style="color:blue"><strong>{{ client.telephone }}</strong></td>
                     <td style="color:green"><strong>{{ client.email }}</strong></td>
@@ -86,33 +84,52 @@
                       
                          {# {%if is_granted(role_admin) %} #}
                        
-                      <td><a class="btn btn-info btn-sm" href="{{ path('edit_client', {id: client.id}) }}" onclick="return confirm('Etes-vous sûr de vouloir modifier cet client ?')">
-                              <i class="fa fa-edit"></i>
-                              <span class="sr-only">Editer</span>
-                          </a> 
+                      <td><button class="btn btn-info btn-sm" data-toggle="modal" data-target="#editClientModal{{ client.id }}" >
+                                <i class="fa fa-edit"></i>
+                            </button>
                           
-									      </td>
-                <td><a class="btn btn-danger btn-sm" href="#" onclick="return confirm('Etes-vous sûr de vouloir désactiver cet client ?')">
-                              <i class="fa fa-trash"></i>
-                              <span class="sr-only">Désactiver</span>
-                          </a> 
+									      <form method="post" action="{{ path('desact_client', {id: client.id}) }}" style="display:inline-block;" onclick="return confirm('Voudriez vous desactiver ce client ?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ client.id) }}">
+                                <button type="submit" class="btn btn-warning btn-sm"><i class="fa fa-ban"></i></button>
+                            </form>
                           
+									      
 									      </td>
                         {# {% endif %} #}
 								    </tr>
+                    <div class="modal fade" id="editClientModal{{ client.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                      <h5 class="modal-title">Modifier {{ client.firstName }} {{ client.lastName }}</h5>
+                      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    {{ form_start(editForms[client.id], {'action': path('edit_client', {'id': client.id}), 'method':'POST'}) }}
+                    <div class="modal-body">
+                      <div class="row">
+                        <div class="col-md-6">{{ form_row(editForms[client.id].firstName) }}</div>
+                        <div class="col-md-6">{{ form_row(editForms[client.id].lastName) }}</div>
+                        <div class="col-md-6">{{ form_row(editForms[client.id].email) }}</div>
+                        <div class="col-md-6">
+                          {{ form_label(editForms[client.id].telephone) }}
+                          {{ form_widget(editForms[client.id].telephone) }}
+                          {{ form_errors(editForms[client.id].telephone) }}
+                        </div>
+
+                        <div class="col-md-6">{{ form_row(editForms[client.id].adresse) }}</div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Annuler</button>
+                      <button type="submit" class="btn btn-primary">Modifier</button>
+                    </div>
+                    {{ form_end(editForms[client.id]) }}
+                  </div>
+                </div>
+              </div>
 						      	{% endfor %}
                   </tbody>
-                  <tfoot>
-                    <tr>
-                      <th>Id</th>
-                      <th>Nom & Prénom</th>
-                      <th>E-mail</th>
-                       <th>Telephone</th>
-                       <th>Adresse</th>
-                      <th>Actions</th>
-                       <th>Supprimer </th>
-                    </tr>
-                  </tfoot>
+                  
                 </table>
               </div>
               <!-- /.card-body -->
@@ -128,7 +145,33 @@
       <!-- /.container-fluid -->
     </section>
     <!-- /.content -->
-
+<div class="modal fade" id="addClientModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Ajouter un client</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      {{ form_start(form, {'action': path('ajout_client'), 'method':'POST'}) }}
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">{{ form_row(form.firstName) }}</div>
+          <div class="col-md-6">{{ form_row(form.lastName) }}</div>
+          <div class="col-md-6">{{ form_row(form.email) }}</div>
+          <div class="col-md-6">
+            {{ form_label(form.telephone) }}{{ form_widget(form.telephone) }}{{ form_errors(form.telephone) }}
+          </div>
+          <div class="col-md-6">{{ form_row(form.adresse) }}</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+      {{ form_end(form) }}
+    </div>
+  </div>
+</div>
   {% endblock %}
 {% block autresFichiersJs %}
 <!-- jQuery -->
@@ -173,6 +216,112 @@ sLast: "Dernier"
     }).buttons().container().appendTo('#client_wrapper .col-md-6:eq(0)');
     
   });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        /* -----------------------------------
+          1️⃣ CONTRÔLE DU TÉLÉPHONE
+        ----------------------------------- */
+        const phoneInputs = document.querySelectorAll('input[name$="[telephone]"]');
+
+        phoneInputs.forEach(input => {
+            input.addEventListener('input', function() {
+
+                this.value = this.value.replace(/[^0-9]/g, '');
+
+                if (this.value.length > 8) {
+                    this.value = this.value.slice(0, 8);
+                }
+
+                if (this.value.length > 0 && !['7', '8', '9'].includes(this.value[0])) {
+                    this.setCustomValidity("Le numéro doit commencer par 7, 8 ou 9.");
+                } else if (this.value.length > 0 && this.value.length < 8) {
+                    this.setCustomValidity("Le numéro doit contenir 8 chiffres.");
+                } else {
+                    this.setCustomValidity("");
+                }
+            });
+
+            input.addEventListener("blur", function() {
+                const val = this.value.trim();
+                if (val !== "" && allPhones.includes(val)) {
+                    this.setCustomValidity("Ce numéro existe déjà !");
+                }
+            });
+        });
+
+
+
+        /* -----------------------------------
+          2️⃣ CONTRÔLE MOT DE PASSE (min 4)
+          ⚠ Fonctionne pour Ajout + Édition
+        ----------------------------------- */
+
+        const pwdInputs = document.querySelectorAll('input[name$="[password]"], input[name$="[plainPassword]"]');
+
+        pwdInputs.forEach(input => {
+
+            input.addEventListener("input", function() {
+
+                // Édition : password vide = OK car on ne change pas !
+                if (this.value.length === 0 && this.required === false) {
+                    this.setCustomValidity("");
+                    return;
+                }
+
+                if (this.value.length < 4) {
+                    this.setCustomValidity("Le mot de passe doit contenir au minimum 4 caractères.");
+                } else {
+                    this.setCustomValidity("");
+                }
+            });
+        });
+
+
+
+        /* -----------------------------------
+          3️⃣ EMAIL UNIQUE (sans AJAX)
+        ----------------------------------- */
+        const allEmails = [
+            {% for u in clients %}
+                "{{ u.email|lower }}",
+            {% endfor %}
+            {% for u in disabledUsers %}
+                "{{ u.email|lower }}",
+            {% endfor %}
+        ];
+
+        const emailInputs = document.querySelectorAll('input[name$="[email]"]');
+
+        emailInputs.forEach(input => {
+            input.addEventListener("blur", function() {
+                const val = this.value.trim().toLowerCase();
+                if (val !== "" && allEmails.includes(val)) {
+                    this.setCustomValidity("Cet email existe déjà !");
+                }
+            });
+
+            input.addEventListener("input", function() {
+                this.setCustomValidity("");
+            });
+        });
+
+
+
+        /* -----------------------------------
+          4️⃣ TÉL UNIQUE (sans AJAX)
+        ----------------------------------- */
+        const allPhones = [
+            {% for u in clients %}
+                "{{ u.telephone }}",
+            {% endfor %}
+            {% for u in disabledUsers %}
+                "{{ u.telephone }}",
+            {% endfor %}
+        ];
+
+    });
 </script>
   {% endblock %}
 

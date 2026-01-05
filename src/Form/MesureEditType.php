@@ -19,85 +19,85 @@ class MesureEditType extends AbstractType
             ->add('epaule',NumberType::class,
             [
                 'scale'=>2,
-                'required'=>true,
+                'required'=>false,
                     
             ])
             ->add('poitrine',NumberType::class,
             [
                 'scale'=>2,
-                'required'=>true,
+                'required'=>false,
                     
             ])
             ->add('encolure',NumberType::class,
             [
                 'scale'=>2,
-                'required'=>true,
+                'required'=>false,
                     
             ])
             ->add('manche',NumberType::class,
             [
                 'scale'=>2,
-                'required'=>true,
+                'required'=>false,
                     
             ])
             ->add('poignee',NumberType::class,
             [
                 'scale'=>2,
-                'required'=>true,
+                'required'=>false,
                     
             ])
             ->add('ecartDos',NumberType::class,
             [
                 'scale'=>2,
-                'required'=>true,
+                'required'=>false,
                     
             ])
             ->add('tourVentrale',NumberType::class,
             [
                 'scale'=>2,
-                'required'=>true,
+                'required'=>false,
                     
             ])
             ->add('longueur',NumberType::class,
             [
                 'scale'=>2,
-                'required'=>true,
+                'required'=>false,
                     
             ])
             ->add('cuisse',NumberType::class,
             [
                 'scale'=>2,
-                'required'=>true,
+                'required'=>false,
                     
             ])
             ->add('fermeture',NumberType::class,
             [
                 'scale'=>2,
-                'required'=>true,
+                'required'=>false,
                     
             ])
             ->add('ceinture',NumberType::class,
             [
                 'scale'=>2,
-                'required'=>true,
+                'required'=>false,
                     
             ])
             ->add('taille',NumberType::class,
             [
                 'scale'=>2,
-                'required'=>true,
+                'required'=>false,
                     
             ])
             ->add('longueurPantalon',NumberType::class,
             [
                 'scale'=>2,
-                'required'=>true,
+                'required'=>false,
                     
             ])
             ->add('basPantalon',NumberType::class,
             [
                 'scale'=>2,
-                'required'=>true,
+                'required'=>false,
                     
             ]);
     }

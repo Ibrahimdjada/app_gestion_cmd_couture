@@ -1,15 +1,19 @@
-{% extends 'Layout.html.twig' %}
+{% extends 'Layout_main.html.twig' %}
 
 {% block title %}
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+Liste des commandes non demarrés
+{% endblock %}
+{% block autresfichierscss %}
+ <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
-  {% block javascripts %}
+  
+{% endblock %}
+{% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
 
-  <title>Liste des commandes non demarrés</title>
-{% endblock %}
+  
 
 {% block content %}
 
@@ -27,15 +31,7 @@
         </div>
     <div class="container" style="padding-top: 30px;">
         <div class="row mb-2">
-          <div class="col-sm-10">
-           
-          </div>
-           <div class="col-sm-2">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
-              <li class="breadcrumb-item active"></li>
-            </ol>
-          </div>
+                     
         </div>
       </div><!-- /.container-->
 
@@ -49,7 +45,14 @@
                 Liste des commandes non demarrés
                  </h6>
             </div>
+            
           </div>
+          <div class="input-group input-group-sm mr-2">
+                  <a href="{{ path('list_commande') }}" class="btn btn-primary btn-sm ml-3">
+                    <i class="fa fa-list"></i>
+                    Voir les commandes
+                  </a>
+            </div>
           <div class="card-body px-0 pb-2">
             <div class="table-responsive p-0">
               <table class="table align-items-center mb-0">
@@ -60,8 +63,10 @@
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">type commandes</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Date commandes</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Date recuperations</th>
+                    {% if not is_granted('ROLE_TAILLEUR') %}
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Montants</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Avances</th>
+                    {% endif %}
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Restes</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Statut</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Modele</th>
@@ -82,8 +87,10 @@
                       <td>{{ commande.typeCom }}</td>
                       <td>{{ commande.datCom |date('Y-m-d')}}</td>
                       <td><strong>{{ commande.datRec |date('Y-m-d')}}</strong></td>
+                      {% if not is_granted('ROLE_TAILLEUR') %}
                       <td style="color:blue"><strong>{{ commande.montant|number_format(0, '.', ' ') }} FCFA</strong></td>
                       <td><strong>{{ commande.avance|number_format(0, '.', ' ') }} FCFA</strong></td>
+                      {% endif %}
                       <td style="color:red"><strong>{{ commande.reste|number_format(0, '.', ' ') }} FCFA</strong></td>
                       <td style="color:green"><strong>{{ commande.statut }}</strong></td>
                    

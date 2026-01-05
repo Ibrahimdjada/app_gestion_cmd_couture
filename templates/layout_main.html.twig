@@ -5,11 +5,34 @@
 		<title>
 			{% block title %}
 			
+			
 			{% endblock %}
-		</title>
+       </title>
+        <style>
+          /* Small helper to truncate long table cells when table-layout fixed is used */
+          .table-sm td, .table-sm th {
+            padding: .3rem .45rem;
+          }
+          .ellipsis {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 140px;
+          }
+          @media (max-width: 576px) {
+            .ellipsis { max-width: 100px; }
+          }
+        </style>
+		
 	{% block stylesheets %}
+     <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
+        <!-- Bootstrap CSS -->
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+        
 	<link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
 		<!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
 		 <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
   <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
 		<link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
@@ -35,14 +58,13 @@
 		 #}
 	<div class="wrapper">
 		 <!-- Preloader -->
-  
+                
 
   <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-light" style="background-color:white;">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
 	
-      <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
@@ -67,18 +89,17 @@
             {# {{ mgilet_notification_render(app.user, {'template' : "notifications.html.twig"}) | raw }} #}
         </ul>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
-          <i class="fas fa-expand-arrows-alt"></i>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-widget="control-sidebar" data-controlsidebar-slide="true" href="#" role="button">
-          <i class="fas fa-th-large"></i>
-        </a>
-      </li>
+        {% if app.user %}
+            <li class="nav-item">
+              <a href="{{ path('app_profile') }}" class="nav-link">
+                <i class="nav-icon fas fa-user"></i>
+              
+              </a>
+            </li>
+            {% endif %}
+      
 	    <li class="nav-item">
-        <a class="nav-link" data-widget="logout" href="#" role="button">
+        <a class="nav-link" data-widget="logout" href="{{ path('app_logout') }}" role="button">
           <i class="fas fa-sign-out-alt"></i>
         </a>
       </li>
@@ -90,17 +111,26 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
    <a href="/" class="brand-link">
-     {# <img src="{{ asset('assets/img/IDM_Couture.jpg') }}" class="navbar-brand-img h-100" alt="main_logo">
-        <span class="ms-1 font-weight-bold text-white"> COUTURES</span>
-      #}
+     <img src="" class="navbar-brand-img h-100" alt="">
+        <span class="ms-1 font-weight-bold text-white"> Gestion couture</span>
+     
     </a>
     <!-- Sidebar -->
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <img src="{{ asset('assets/img/IDM_Couture.jpg') }}" class="img-circle elevation-2" alt="User Image">
-        <span class="ms-1 font-weight-bold text-white"> IDMCoutures</span>
+          <img src="{{ asset('assets/img/userB.jpg') }}" class="img-circle elevation-2" alt="User Image">
+        
+            {% if app.user %}
+                <span class="ms-1 font-weight-bold text-white">
+                    {{ app.user.firstName }} {{ app.user.lastName }}
+                </span>
+            {% else %}
+                <span class="ms-1 font-weight-bold text-white">
+                    Invité
+                </span>
+            {% endif %}
         </div>
         <div class="info">
           {# <a href="{{ path('edit_password') }}" class="d-block">{{ app.user.username }}</a> #}
@@ -120,141 +150,158 @@
       </div>
 	<!-- Sidebar Menu -->
 	<nav class="mt-2">
-	<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-	
-	 <li class="nav-item menu">
-            <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-table"></i>
-              <p>
-               Gestion profils
-               <i class="fas fa-angle-left right"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              {# <li class="nav-item">
-									<a href="#" class="nav-link">
-										<i class="far fa-circle nav-icon"></i>
-										<p>Réinitialisation</p>
-									</a>
-								</li> #}
-              <li class="nav-item">
-									<a href="{{ path('list_user') }}" class="nav-link">
-										<i class="far fa-circle nav-icon"></i>
-										<p>Utilisateurs</p>
-									</a>
-								</li>
-                <li class="nav-item">
-									<a href="{{ path('tailleur_list') }}" class="nav-link">
-										<i class="far fa-circle nav-icon"></i>
-										<p>Tailleurs</p>
-									</a>
-                  </li>
-                <li class="nav-item">
-									<a href="{{ path('client_list') }}" class="nav-link">
-										<i class="far fa-circle nav-icon"></i>
-										<p>Clients</p>
-									</a>
-                  </li>
-				  </li>
-		 </ul>
-				   <li class="nav-item menu">
-            <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-table"></i>
-              <p>
-               Gestion commande
-               <i class="fas fa-angle-left right"></i>
-              </p>
-            </a>
-				   <ul class="nav nav-treeview">
-                <li class="nav-item">
-									<a href="{{ path('list_mesure') }}" class="nav-link">
-										<i class="far fa-circle nav-icon"></i>
-										<p>Mesures</p>
-									</a>
-								</li>
-								
-                <li class="nav-item">
-									<a href="{{ path('list_commande') }}" class="nav-link">
-										<i class="far fa-circle nav-icon"></i>
-										<p>Commandes</p>
-									</a>
-                </li>  
-								
-								<li class="nav-item">
-									<a href="{{ path('list_rdv') }}" class="nav-link">
-										<i class="far fa-circle nav-icon"></i>
-										<p>Rendez-vous</p>
-									</a>
-								</li>
-                </li>
-								 
-                </ul>
-							
+      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+
             
-                <li class="nav-item menu">
-                  <a href="#" class="nav-link">
-                      <i class="nav-icon fas fa-table"></i>
-                    <p>
+                 
+              <!-- Menus pour admin/super/etc. -->
+              <!-- Tableau de bord -->
+                {% if is_granted('ROLE_SUPER') or is_granted('ROLE_ADMIN') or is_granted('ROLE_TAILLEUR')  %}
+              
+              <li class="nav-item">
+                <a href="{{ path('app_home') }}" class="nav-link">
+                  <i class="nav-icon fas fa-tachometer-alt"></i>
+                  <p>Tableau de bord</p>
+                </a>
+              </li>
+              {% endif %}
+              <!-- Gestion profils -->
+               {% if is_granted('ROLE_SUPER') or is_granted('ROLE_ADMIN') %}
+              
+              <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-users-cog"></i>
+                  <p>
+                    Gestion profils
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{{ path('list_user') }}" class="nav-link">
+                      <i class="far fa-user nav-icon"></i>
+                      <p>Utilisateurs</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ path('tailleur_list') }}" class="nav-link">
+                      <i class="fas fa-cut nav-icon"></i>
+                      <p>Tailleurs</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ path('client_list') }}" class="nav-link">
+                      <i class="fas fa-user-friends nav-icon"></i>
+                      <p>Clients</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              {% endif %}
+              <!-- Gestion commandes -->
+              {% if is_granted('ROLE_SUPER') or is_granted('ROLE_ADMIN') %}
+              <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-shopping-cart"></i>
+                  <p>
+                    Gestion commande
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{{ path('list_mesure') }}" class="nav-link">
+                      <i class="fas fa-ruler-combined nav-icon"></i>
+                      <p>Mesures</p>
+                    </a>
+                  </li>
+                 
+                  {% endif %}
+                  {% if is_granted('ROLE_SUPER') or is_granted('ROLE_ADMIN') or is_granted('ROLE_TAILLEUR') %}
+                  <li class="nav-item">
+                    <a href="{{ path('list_commande') }}" class="nav-link">
+                      <i class="fas fa-clipboard-list nav-icon"></i>
+                      <p>Commandes</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ path('list_rdv') }}" class="nav-link">
+                      <i class="far fa-calendar-check nav-icon"></i>
+                      <p>Rendez-vous</p>
+                    </a>
+                  </li>
+                {% endif %}
+                </ul>
+              </li>
+              <!-- Gestion dettes -->
+               {% if is_granted('ROLE_SUPER') or is_granted('ROLE_ADMIN') %}
+              <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-wallet"></i>
+                  <p>
                     Gestion de dettes
                     <i class="fas fa-angle-left right"></i>
-                    </p>
-                  </a>
+                  </p>
+                </a>
                 <ul class="nav nav-treeview">
-                 <li class="nav-item">
-									<a href="{{ path('list_pret') }}" class="nav-link">
-										<i class="far fa-circle nav-icon"></i>
-										<p>les prets</p>
-									</a>
-								</li></li></li>
-								 </ul>
+                  <li class="nav-item">
+                    <a href="{{ path('list_pret') }}" class="nav-link">
+                      <i class="fas fa-hand-holding-usd nav-icon"></i>
+                      <p>Les prêts</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <!-- Gestion rapports -->
+              <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-chart-line"></i>
+                  <p>
+                    Gestion de Rapport
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{{ path('rap_peride') }}" class="nav-link">
+                      <i class="far fa-clock nav-icon"></i>
+                      <p>Par période</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ path('rap_conc') }}" class="nav-link">
+                      <i class="fas fa-user-edit nav-icon"></i>
+                      <p>Par concepteur</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ path('rap_statut') }}" class="nav-link">
+                    <i class="fas fa-chart-bar nav-icon"></i>
+                    <p>Par statut</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <!-- Paramètres -->
+              <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-cogs"></i>
+                  <p>
+                    Paramètre
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{{ path('user_permissions') }}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Gestion des droits</p>
+                    </a>
+                  </li>
+                </ul>
 
-										<li class="nav-item menu">
-            <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-table"></i>
-              <p>
-               Gestion de Rapport
-               <i class="fas fa-angle-left right"></i>
-              </p>
-            </a>
-					 <ul class="nav nav-treeview">
-               
-                <li class="nav-item">
-									<a href="{{ path('rap_peride') }}" class="nav-link">
-										<i class="far fa-circle nav-icon"></i>
-										<p>Rapports par periode</p>
-									</a>
-								</li>
-							 <li class="nav-item">
-									<a href="{{ path('rap_conc') }}" class="nav-link">
-										<i class="far fa-circle nav-icon"></i>
-										<p>Rapport par concepteur</p>
-									</a>
-								</li>
-                 <li class="nav-item">
-									<a href="{{ path('rap_statut') }}" class="nav-link">
-										<i class="far fa-circle nav-icon"></i>
-										<p>Rapport statut</p>
-									</a>
-								</li>
-                </li>
-            </ul>
-            {% if app.user %}
-            <li class="nav-item">
-              <a href="{{ path('app_profile') }}" class="nav-link">
-                <i class="nav-icon fas fa-user"></i>
-                <p>Mon profile</p>
-              </a>
-            </li>
-            {% endif %}
-            </li>
-            <li class="nav-item">
-              <a href="{{ path('app_logout') }}" class="nav-link">
-                <i class="nav-icon fas fa-sign-out-alt"></i>
-                <p>Déconnexion</p>
-              </a>
-            </li>
- 
-          </li>
+              </li>
+              {% endif %}
 					</ul>
 				</nav>
 			</div>
@@ -276,67 +323,42 @@
   <!-- /.control-sidebar -->
 </div>
 <!-- ./wrapper -->
+
 {% block autresFichiersJs %}
+<!-- Charger jQuery en tout premier -->
 <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
-<!-- Bootstrap 4 -->
+
+<!-- Puis DataTables, Bootstrap, AdminLTE, etc. -->
 <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-<!-- AdminLTE App -->
+<script src="{{ asset('plugins/datatables-bs4/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
-<!-- AdminLTE for demo purposes -->
 <script src="{{ asset('dist/js/demo.js') }}"></script>
-<!-- Summernote -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
 
 <script>
   $(function () {
-    // Summernote
-    $('.textarea').summernote()
-  })
+    // Correction du menu déroulant pour garder le menu ouvert sur la page active
+    var url = window.location;
+    var href = url.href;
+    var afterWithout = href.substr(0, href.lastIndexOf("/"));
 
+    // Active link
+    $('ul.nav-sidebar a').filter(function() {
+      return this.href == url || this.href == afterWithout;
+    }).addClass('active');
+
+    // Ouvre le menu parent si un sous-onglet est actif
+    $('ul.nav-treeview a').filter(function() {
+      return this.href == url || this.href == afterWithout;
+    }).parents('.has-treeview').addClass('menu-open').children('a').addClass('active');
+  });
 </script>
-
 {% endblock %}
-
-<script>
-    function goBack() {
-        window.history.back();
-    }
-</script>
-
-<script>
-     var url = window.location;
-var href = url.href;
-let c = href.split("/").length - 3
-var afterWithout = href.substr(0, href.lastIndexOf("/"));
-
-if (c == 1) {
-    $('ul.nav-sidebar a').filter(function() {
-        return this.href == url;
-    }).addClass('active');
-    // for sidebar menu and treeview
-    $('ul.nav-treeview a').filter(function() {
-            return this.href == url;
-        }).parentsUntil(".nav-sidebar > .nav-treeview")
-        .css({
-            'display': 'block'
-        })
-        .addClass('menu-open').prev('a')
-        .addClass('active');
-} else {
-    $('ul.nav-sidebar a').filter(function() {
-        return this.href == afterWithout;
-    }).addClass('active');
-    // for sidebar menu and treeview
-    $('ul.nav-treeview a').filter(function() {
-            return this.href == afterWithout;
-        }).parentsUntil(".nav-sidebar > .nav-treeview")
-        .css({
-            'display': 'block'
-        })
-        .addClass('menu-open').prev('a')
-        .addClass('active');
-}
-
-</script>
 </body>
 </html>

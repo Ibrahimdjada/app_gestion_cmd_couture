@@ -1,110 +1,42 @@
-{% extends 'layout.html.twig' %}
 
-{% block title %}
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
-  {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
+<div>
+    {# Messages d'erreur / succès spécifiques au formulaire #}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
 
-    <title>Payement du reliquat</title>
-{% endblock %}
+    <p>
+        Mr :
+        {% if commande.user %}
+            {{ commande.user.firstname }} {{ commande.user.lastname }}
+        {% endif %}
+        — Reste à payer :
+        <strong>{{ commande.reste|number_format(0, '.', ' ') }} FCFA</strong>
+    </p>
 
-{% block style %}
-    <style>
-        /* Styles spécifiques pour la mise en page des champs */
-        .container {
-            margin-top: 50px;
-            width: 35%;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .form-section {
-            margin-left: 0; /* Pour aligner toute la section à gauche */
-            padding-left: 0; /* Optionnel : ajustement du padding si nécessaire */
-        }
-        .form-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            flex: 0 0 30%;
-            text-align: right;
-            margin-right: 15px;
-        }
-        .form-group input[type="text"],
-        .form-group input[type="email"],
-        .form-group input[type="tel"] { /* Utilisation de type="tel" pour le champ de téléphone */
-            flex: 0 0 65%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        /* Pour gérer le responsive */
-        @media (max-width: 768px) {
-            .form-group {
-                flex-direction: column;
-            }
-            .form-group label {
-                text-align: left;
-                margin-right: 0;
-                margin-bottom: 5px;
-            }
-            .form-group input[type="text"],
-            .form-group input[type="email"],
-            .form-group input[type="tel"] {
-                width: 100%;
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
-        }
-    </style>
-{% endblock %}
+    {{ form_start(form, {
+        'action': path('cmd_reliquat', {id: commande.id}),
+        'attr': {'id': 'form-reliquat'}
+    }) }}
 
-{% block content %}
-
- <div class="container mt-4">
-            {% for message in app.flashes('success') %}
-                <div class="alert alert-success">
-                    {{ message }}
-                </div>
-            {% endfor %}
-            {% for message in app.flashes('error') %}
-                <div class="alert alert-danger">
-                    {{ message }}
-                </div>
-            {% endfor %}
+        <div class="form-group">
+            {{ form_label(form.reliquat, 'Versement (FCFA)') }}
+            {{ form_widget(form.reliquat, {
+                'attr': {
+                    'class': 'form-control',
+                    'placeholder':'Entrez le montant'
+                }
+            }) }}
+            {{ form_errors(form.reliquat) }}
         </div>
-<nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" data-scroll="true">
-    <div class="container-fluid py-1 px-3">
-        <h6 class="font-weight-bolder mb-0">Mr: {% if  commande.user %}{{ commande.user.firstname }} {{ commande.user.lastname }}  {% else %} {% endif %} : non payer {{ commande.reste|number_format(0, '.', ' ') }} FCFA</h6>
-    </div>
-</nav>
 
-<div class="container form-section">
-    <div class="row">
-    <div class="col-md-14" style="margin-left:30px">
-        
-            <form method="POST">
-                {{ form_start(form) }}
-    <div class="form-group">
-      {{ form_label(form.reliquat, 'versement (FCFA)') }}
-      {{ form_widget(form.reliquat, {'attr': {'class': 'form-control',
-      'placeholder':'Entrez le montant'
-      }}) }}
-    </div>
-   
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary"style="margin-right:15px">Valider</button>
-        <i class ="fa fa-ban"><a href="{{ path('list_commande')}}"> <strong>Annuler</strong></a></i>
+        <div class="form-group text-right mt-3">
+            <button type="submit" class="btn btn-primary">Valider</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+        </div>
 
-    </div>
     {{ form_end(form) }}
-            </form>
-        </div>
-    </div>
 </div>
-{% endblock %}

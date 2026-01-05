@@ -47,7 +47,7 @@
                 <table id="pret" class="table table-bordered table-striped">
                   <thead>
                     <tr>
-                      <th>Id</th>
+                      
                       <th>Nom & Prénom</th>
                       <th>Date pret</th>
                       <th>Date echeance</th>
@@ -79,8 +79,7 @@
                  {% endblock %}
                     {% for pret in prets %}
 								    <tr>
-                      <td>{{ pret.id }}</td>
-                      
+                     
                       <td>{% if  pret.usert %}
                       {{ pret.usert.firstName |capitaize_first }} {{ pret.usert.lastName |capitaize_first}}
                       
@@ -97,7 +96,8 @@
                       <td>{% if  pret.reste > 0 %}
                             <a class="btn btn-sm btn-outline-success"style="color: blue; border-color: blue;" href="{{ path('pret_payer', {id: pret.id}) }}" 
                             onclick="return confirm('Voulez-vous finaliser le versement ?')">
-                                  <i class="bi-check"></i>
+                                  {# <i class="bi bi-cash-coin"></i> #}
+                                  <i class="fas fa-check"></i>
                                   <span class="sr-only">Versement</span>
                               </a> 
                                {% endif %}
@@ -119,22 +119,7 @@
 								    </tr>
 						      	{% endfor %}
                   </tbody>
-                  <tfoot>
-                    <tr>
-                      <th>Id</th>
-                      <th>Nom & Prénom</th>
-                      <th>Date pret</th>
-                      <th>Date echeance</th>
-                      <th>periode</th>
-                      <th>Montant</th>
-                      <th>Par Mois</th>
-                      <th>Reste</th>
-                      <th>Statut</th>
-                      <th>Versement</th>
-                      <th>Actions</th>
-                       <th>Supprimer </th>
-                    </tr>
-                  </tfoot>
+                 
                 </table>
               </div>
               <!-- /.card-body -->

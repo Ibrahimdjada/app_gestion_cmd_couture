@@ -5,7 +5,7 @@
 {% block body %}
 <style>
     body {
-        background: url('https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+        background: url('{{ asset('assets/img/bgCouture.jpg') }}') no-repeat center center fixed;
         background-size: cover;
     }
     .login-outer {
@@ -98,7 +98,7 @@
         <div class="p-4">
 
         <div class="text-center mb-3">
-            <img src="{{ asset('assets/img/IDM_Couture.jpg') }}" alt="Logo" class="img-fluid" style="max-width: 75px; margin-left: 160px; margin-top: 20px">
+            <img src="{{ asset('assets/img/IDM_Couture.jpg') }}" alt="Logo" class="img-fluid" style="max-width: 75px; margin-top: 20px">
         </div>
 
     <form method="post">

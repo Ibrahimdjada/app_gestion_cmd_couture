@@ -96,6 +96,7 @@ class CommandeRepository extends ServiceEntityRepository
         ;
         return $qb;
     }
+    
     public function getCommandeMois($statut,$debut,$fin)
     {
         $qb = $this->createQueryBuilder('c')
@@ -109,6 +110,17 @@ class CommandeRepository extends ServiceEntityRepository
         return $qb
         ->getQuery()
         ->getResult();
+    }
+
+    public function getCommandeMoisTailleur($statut, $debut, $fin, $userId)
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->select('count(c.id) as nombre')
+            ->where('c.statut = :statut')
+            ->andWhere('c.usert = :userId')
+            ->setParameter('statut', $statut)
+            ->setParameter('userId', $userId);
+        return $qb->getQuery()->getResult();
     }
     //    /**
     //     * @return Commande[] Returns an array of Commande objects

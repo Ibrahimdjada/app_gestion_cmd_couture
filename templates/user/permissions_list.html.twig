@@ -1,0 +1,108 @@
+{% extends 'layout_main.html.twig' %}
+
+{% block content %}
+
+<section class="content-header">
+  <h1>Gestion des permissions</h1>
+</section>
+
+<section class="content">
+  <div class="container-fluid">
+
+    {% for message in app.flashes('success') %}
+      <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Utilisateurs</h3>
+      </div>
+
+      <div class="card-body">
+        <table class="table table-bordered">
+          <thead>
+          <tr>
+            <th>Login</th>
+            <th>Nom & Prénom</th>
+            <th>Permissions</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          {% for user in users %}
+            <tr>
+              <td>{{ user.username }}</td>
+              <td>{{ user.firstName }} {{ user.lastName }}</td>
+              <td>
+                {% if user.permissions is empty %}
+                  <em>Aucune</em>
+                {% else %}
+                  {{ user.permissions|join(', ') }}
+                {% endif %}
+              </td>
+              <td>
+                <button class="btn btn-primary btn-sm openPermissionsBtn"
+                        data-url="{{ path('user_set_permissions', {id: user.id}) }}">
+                  Définir les actions
+                </button>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{# ------ MODAL GLOBAL ------ #}
+<div class="modal fade" id="permissionsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="permissionsModalContent">
+            <!-- chargé dynamiquement -->
+        </div>
+    </div>
+</div>
+
+{# ------ JS FETCH ------ #}
+<script>
+document.querySelectorAll('.openPermissionsBtn').forEach(btn => {
+
+    btn.addEventListener('click', () => {
+        const url = btn.dataset.url;
+
+        fetch(url)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('permissionsModalContent').innerHTML = html;
+
+                // Ouvre le modal Bootstrap
+                const modal = new bootstrap.Modal(document.getElementById('permissionsModal'));
+                modal.show();
+
+                // Gestion de soumission AJAX
+                const form = document.querySelector('#permissionsModalContent form');
+
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    fetch(url, {
+                        method: "POST",
+                        body: new FormData(form)
+                    })
+                    .then(response => response.text())
+                    .then(msg => {
+                        if (msg === "OK") {
+                            window.location.reload();
+                        }
+                    });
+                });
+            });
+    });
+});
+</script>
+
+{% endblock %}

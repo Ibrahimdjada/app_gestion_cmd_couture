@@ -37,7 +37,7 @@ class MesureController extends BaseController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }
@@ -60,11 +60,7 @@ class MesureController extends BaseController
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            return $this->render('ErrorPage.html.twig');
-        }
+        
         // Récupérer l'utilisateur correspondant à l'identifiant fourni dans la route
         $user = $entityManager->getRepository(User::class)->find($client);
     
@@ -83,29 +79,38 @@ class MesureController extends BaseController
     
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                // Validation des valeurs numériques
+                // ✅ Validation des valeurs numériques
                 $fields = ['BasPantalon', 'Ceinture', 'Cuisse', 'EcartDos', 'Encolure', 'Epaule', 
-                           'Fermeture', 'Longueur', 'LongueurPantalon', 'Manche', 'Poignee', 
-                           'Poitrine', 'Taille', 'TourVentrale'];
-    
+                        'Fermeture', 'Longueur', 'LongueurPantalon', 'Manche', 'Poignee', 
+                        'Poitrine', 'Taille', 'TourVentrale'];
+
                 foreach ($fields as $field) {
                     $getter = 'get' . $field;
                     $value = $mesure->$getter();
-    
+
                     if ($value < 0 || $value > 9.99) {
                         throw new \Exception("La valeur pour $field doit être comprise entre 0 et 9.99.");
                     }
                 }
 
-                foreach((new \ReflectionClass($mesure))->getProperties() as $property){
-                    $property->setAccessible(True);
-                    if
-                    ($property->getValue($mesure)=== null)
-                    {
-                        $property->setValue($mesure,0);
+                // ✅ Remplacer SEULEMENT les champs numériques à null (sans toucher aux dates)
+                foreach ((new \ReflectionClass($mesure))->getProperties() as $property) {
+                    $property->setAccessible(true);
+
+                    if (in_array($property->getName(), [
+                        'basPantalon','ceinture','cuisse','ecartDos','encolure','epaule',
+                        'fermeture','longueur','longueurPantalon','manche','poignee',
+                        'poitrine','taille','tourVentrale'
+                    ])) {
+                        if ($property->getValue($mesure) === null) {
+                            $property->setValue($mesure, 0);
+                        }
                     }
                 }
-    
+
+                // ✅ CREATED AT AUTOMATIQUE VIA PrePersist ✅
+                $mesure->setCreatedBy($users);
+
                 // Persister et enregistrer
                 $entityManager->persist($mesure);
                 $entityManager->flush();
@@ -135,11 +140,7 @@ class MesureController extends BaseController
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            return $this->render('ErrorPage.html.twig');
-        }
+       
         // Créer un nouveau client vide
         $mesure = new Mesure();
 
@@ -150,45 +151,50 @@ class MesureController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-         
+
             try {
-                // Validation des valeurs numériques
+                // ✅ Validation des valeurs numériques
                 $fields = ['BasPantalon', 'Ceinture', 'Cuisse', 'EcartDos', 'Encolure', 'Epaule', 
-                           'Fermeture', 'Longueur', 'LongueurPantalon', 'Manche', 'Poignee', 
-                           'Poitrine', 'Taille', 'TourVentrale'];
-    
+                        'Fermeture', 'Longueur', 'LongueurPantalon', 'Manche', 'Poignee', 
+                        'Poitrine', 'Taille', 'TourVentrale'];
+
                 foreach ($fields as $field) {
                     $getter = 'get' . $field;
                     $value = $mesure->$getter();
-    
+
                     if ($value < 0 || $value > 9.99) {
                         throw new \Exception("La valeur pour $field doit être comprise entre 0 et 9.99.");
                     }
                 }
-                
-                foreach((new \ReflectionClass($mesure))->getProperties() as $property){
-                    $property->setAccessible(True);
-                    if
-                    ($property->getValue($mesure)=== null)
-                    {
-                        $property->setValue($mesure,0);
+
+                // ✅ Remplacer SEULEMENT les champs numériques à null (sans toucher aux dates)
+                foreach ((new \ReflectionClass($mesure))->getProperties() as $property) {
+                    $property->setAccessible(true);
+
+                    if (in_array($property->getName(), [
+                        'basPantalon','ceinture','cuisse','ecartDos','encolure','epaule',
+                        'fermeture','longueur','longueurPantalon','manche','poignee',
+                        'poitrine','taille','tourVentrale'
+                    ])) {
+                        if ($property->getValue($mesure) === null) {
+                            $property->setValue($mesure, 0);
+                        }
                     }
                 }
 
-                // Enregistrer le nouveau client dans la base de données
+                // ✅ CREATED AT AUTOMATIQUE VIA PrePersist ✅
+                $mesure->setCreatedBy($users);
+
                 $this->entityManager->persist($mesure);
                 $this->entityManager->flush();
-               $this->addFlash('success', 'La mesure a été ajouté avec succès.');
-               return $this->redirectToRoute('list_mesure');
+
+                $this->addFlash('success', 'La mesure a été ajouté avec succès.');
+                return $this->redirectToRoute('list_mesure');
 
             } catch (\Exception $e) {
-                // Ajouter un flash message d'erreur générique
                 $this->addFlash('error', 'Une erreur est survenue lors de l\'ajout du mesure verifier les champs.');
-                // Vous pouvez aussi ajouter un message spécifique selon l'erreur, par exemple :
-                // $this->addFlash('error', 'Erreur : ' . $e->getMessage());
             }
         }
-
         // Si le formulaire n'est pas soumis ou n'est pas valide, afficher le formulaire
         return $this->render('mesure/FormMesure.html.twig', [
             'form' => $form->createView(),
@@ -196,76 +202,69 @@ class MesureController extends BaseController
     }
 
 
-    #[Route('/mesure/{id}/edit', name: 'edit_mesure')]
+        #[Route('/mesure/{id}/edit', name: 'edit_mesure')]
+        public function edit(Request $request, Mesure $mesure): Response
+        {
+            $users = $this->getUser();
 
-    public function edit(Request $request, Mesure $mesure): Response
-    {
-        $users = $this->getUser();
-        
-        if (
-            !$users 
-        ) {
-            return $this->redirectToRoute('app_login');
-        }
-        $roles = $users->getRoles();
-        $role = $roles[0];
-        if (
-            $role !== Constantes::ROLE_TAILLEUR && $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            return $this->render('ErrorPage.html.twig');
-        }
-        // Créer un formulaire pour l'édition du client en utilisant EditType
-        $form = $this->createForm(MesureEditType::class, $mesure);
-
-        // Gérer la soumission du formulaire
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            try {
-               // Validation des valeurs numériques
-                $fields = ['BasPantalon', 'Ceinture', 'Cuisse', 'EcartDos', 'Encolure', 'Epaule', 
-                           'Fermeture', 'Longueur', 'LongueurPantalon', 'Manche', 'Poignee', 
-                           'Poitrine', 'Taille', 'TourVentrale'];
-    
-                foreach ($fields as $field) {
-                    $getter = 'get' . $field;
-                    $value = $mesure->$getter();
-    
-                    if ($value < 0 || $value > 9.99) {
-                        throw new \Exception("La valeur pour $field doit être comprise entre 0 et 9.99.");
-                    }
-                }
-                
-                foreach((new \ReflectionClass($mesure))->getProperties() as $property){
-                    $property->setAccessible(True);
-                    if
-                    ($property->getValue($mesure)=== null)
-                    {
-                        $property->setValue($mesure,0);
-                    }
-                }
-                // Enregistrer les modifications du client dans la base de données
-                $this->entityManager->flush();
-
-                // Ajouter un flash message de succès
-                $this->addFlash('success', 'Les informations du mesure ont été mises à jour avec succès.');
-
-                // Rediriger vers la liste des clients après la modification
-                return $this->redirectToRoute('list_mesure');
-            } catch (\Exception $e) {
-                // En cas d'erreur lors de la mise à jour
-                $this->addFlash('error', 'Une erreur est survenue lors de la mise à jour des informations du mesure.');
-                // Vous pouvez ajouter un message spécifique à l'erreur si nécessaire
-                // $this->addFlash('error', 'Erreur : ' . $e->getMessage());
+            if (!$users) {
+                return $this->redirectToRoute('app_login');
             }
+
+            $form = $this->createForm(MesureEditType::class, $mesure);
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                try {
+
+                    // ✅ Validation des valeurs numériques
+                    $fields = ['BasPantalon', 'Ceinture', 'Cuisse', 'EcartDos', 'Encolure', 'Epaule',
+                            'Fermeture', 'Longueur', 'LongueurPantalon', 'Manche', 'Poignee',
+                            'Poitrine', 'Taille', 'TourVentrale'];
+
+                    foreach ($fields as $field) {
+                        $getter = 'get' . $field;
+                        $value = $mesure->$getter();
+
+                        if ($value < 0 || $value > 9.99) {
+                            throw new \Exception("La valeur pour $field doit être comprise entre 0 et 9.99.");
+                        }
+                    }
+
+                    // ✅ Ne mettre 0 QUE pour les champs numériques (PAS pour createdAt, updatedAt, createdBy, etc.)
+                    foreach ((new \ReflectionClass($mesure))->getProperties() as $property) {
+                        $property->setAccessible(true);
+
+                        if (in_array($property->getName(), [
+                            'basPantalon','ceinture','cuisse','ecartDos','encolure','epaule',
+                            'fermeture','longueur','longueurPantalon','manche','poignee',
+                            'poitrine','taille','tourVentrale'
+                        ])) {
+                            if ($property->getValue($mesure) === null) {
+                                $property->setValue($mesure, 0);
+                            }
+                        }
+                    }
+
+                    // ✅ UPDATED AT géré AUTOMATIQUEMENT par PreUpdate
+                    $mesure->setUpdatedBy($users);
+
+                    $this->entityManager->flush();
+
+                    $this->addFlash('success', 'Les informations du mesure ont été mises à jour avec succès.');
+                    return $this->redirectToRoute('list_mesure');
+
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Une erreur est survenue lors de la mise à jour des informations du mesure.');
+                }
+            }
+
+            return $this->render('mesure/EditMesure.html.twig', [
+                'form' => $form->createView(),
+                'mesure' => $mesure,
+            ]);
         }
 
-        // Afficher le formulaire d'édition du client
-        return $this->render('mesure/EditMesure.html.twig', [
-            'form' => $form->createView(),
-            'mesure' => $mesure,
-        ]);
-    }
 
     
 
@@ -283,7 +282,7 @@ class MesureController extends BaseController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-            $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }

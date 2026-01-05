@@ -14,7 +14,7 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               {# <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li> #}
-              <li class="breadcrumb-item active"><a href="{{ path('ajout_client') }}">Nouvel client</a></li>
+              {# <li class="breadcrumb-item active"><a href="{{ path('ajout_client') }}">Nouvel client</a></li> #}
             </ol>
           </div>
         </div>
@@ -36,9 +36,22 @@
 					{% endif %}
               </div> #}
    <div class="card-body">
+   {% for type, messages in app.session.flashBag.all %}
+  {% for message in messages %}
+    {% if type == 'error' %}{% set type = 'danger' %}{% endif %}
+    {% if type == 'success' %}{% set type = 'success' %}{% endif %}
+    <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="close" data-dismiss="alert">
+        <span>&times;</span>
+      </button>
+    </div>
+  {% endfor %}
+{% endfor %}
+
   <div class="container" style="padding-top: 0;">
 
-  <h3>Formulaire d'ajout </h3>
+ 
    {{ form_start(form) }}
 
     <div class="row">
@@ -151,13 +164,43 @@
 
     <div class="form-group">
       <button type="submit" class="btn btn-primary" style="margin-right:15px">Enregistrer</button>
+      {% if not is_granted('ROLE_TAILLEUR') %}
       <i class="fa fa-ban">
         <a href="{{ path('list_mesure') }}"><strong>Annuler</strong></a>
       </i>
+      {% endif %}
     </div>
 
     {{ form_end(form) }}
   
 </div>
 
+{% endblock %}
+{% block autresFichiersJs %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const inputs = document.querySelectorAll(
+        'input[name*="epaule"], input[name*="poitrine"], input[name*="manche"], input[name*="encolure"], ' +
+        'input[name*="poignee"], input[name*="ecartDos"], input[name*="tourVentrale"], input[name*="longueur"], ' +
+        'input[name*="ceinture"], input[name*="taille"], input[name*="fermeture"], input[name*="cuisse"], ' +
+        'input[name*="longueurPantalon"], input[name*="basPantalon"]'
+    );
+
+    inputs.forEach(function(input) {
+
+        // Empêche les lettres
+        input.addEventListener("input", function () {
+            this.value = this.value.replace(/[^0-9.]/g, '');
+        });
+
+        // Clavier numérique sur téléphone
+        input.setAttribute("inputmode", "decimal");
+        input.setAttribute("pattern", "[0-9]+(\\.[0-9]{1,2})?");
+        input.setAttribute("placeholder", "Ex: 2.5");
+
+    });
+
+});
+</script>
 {% endblock %}

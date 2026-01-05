@@ -38,7 +38,7 @@ class PretController extends AbstractController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-             $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+             $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }
@@ -61,11 +61,7 @@ class PretController extends AbstractController
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-            $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            return $this->render('ErrorPage.html.twig');
-        }
+        
         // Créer un nouveau client vide
         $pret = new Pret();
 
@@ -142,11 +138,7 @@ class PretController extends AbstractController
         }
         $roles = $users->getRoles();
         $role = $roles[0];
-        if (
-             $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
-        ) {
-            return $this->render('ErrorPage.html.twig');
-        }
+        
         // Créer un formulaire pour l'édition du client en utilisant EditType
         $form = $this->createForm(EditPretType::class, $pret);
 
@@ -212,7 +204,7 @@ class PretController extends AbstractController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-            $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+            $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }
@@ -240,7 +232,7 @@ class PretController extends AbstractController
         $roles = $users->getRoles();
         $role = $roles[0];
         if (
-             $role !== Constantes::ROLE_USER && $role !== Constantes::ROLE_SUPER
+             $role !== Constantes::ROLE_ADMIN && $role !== Constantes::ROLE_SUPER
         ) {
             return $this->render('ErrorPage.html.twig');
         }
@@ -280,7 +272,7 @@ class PretController extends AbstractController
         if ($rest == 0) {
             // Si le reste est zéro, marquer comme "Payer".
             $pret->setStat('Payer');
-}
+        }
                 
                 // Enregistrer les modifications du client dans la base de données
                 $this->entityManager->persist($pret);
